@@ -231,9 +231,9 @@ export namespace ComponentViewTree {
                             return 'The name of the TestSuite cannot be empty';
                         }
                         // Check if the name already exists
-                        for (let testSuite of element.parent?.children ?? []) {
+                        for (let testSuite of element.children) {
                             if (
-                                testSuite.label === element.label
+                                testSuite.label === value
                                 || testSuite.children.find(item => item.label === value)) {
                                 return 'TestSuites and TestCases cannot have the same name';
                             }
@@ -290,7 +290,7 @@ export namespace ComponentViewTree {
                         // Check if the name already exists
                         for (const testSuite of element.parent?.children ?? []) {
                             if (
-                                testSuite.label === element.label
+                                testSuite.label === value
                                 || testSuite.children.find(item => item.label === value)) {
                                 return 'TestSuites and TestCases cannot have the same name';
                             }

@@ -23,6 +23,16 @@
           "command": "component_editor.generateProject",
           "when": "view == component_editor",
           "group": "navigation"
+        },
+        {
+          "command": "component_editor.configureProject",
+          "when": "view == component_editor",
+          "group": "navigation"
+        },
+        {
+          "command": "component_editor.compileProject",
+          "when": "view == component_editor",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -50,11 +60,6 @@
           "command": "component_editor.deleteTestCase",
           "when": "view == component_editor && viewItem == testCase",
           "group": "inline"
-        },
-        {
-          "command": "component_editor.goToTestCase",
-          "when": "view == component_editor && viewItem == testCase",
-          "group": ""
         }
       ]
     },
@@ -93,6 +98,16 @@
         "command": "component_editor.deleteTestCase",
         "title": "Delete TestCase",
         "icon": "$(trash)"
+      },
+      {
+        "command": "component_editor.configureProject",
+        "title": "Configure Project",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "component_editor.compileProject",
+        "title": "Compile Project",
+        "icon": "$(run-all)"
       }
     ],
     "viewsContainers": {

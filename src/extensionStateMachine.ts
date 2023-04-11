@@ -25,6 +25,7 @@ export namespace ModelStateMachine {
         modelHandler: ModelHandler.Model = new ModelHandler.Model();
         componentViewTreeView: ComponentViewTree.ComponentView = new ComponentViewTree.ComponentView(this.modelHandler);
         projectGenerator: ProjectGenerator.ProjectGenerator = new ProjectGenerator.ProjectGenerator(this.modelHandler);
+        terminal: vscode.Terminal | undefined;
 
         public async process() {
             for (const transition of this.transitions) {
@@ -36,6 +37,28 @@ export namespace ModelStateMachine {
                     }
                 }
             }
+        }
+
+        public async configureProject() {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode Component Editor",
+                );
+            }
+            this.terminal.show();
+            this.terminal.sendText("meson setup builddir --cross-file=integration/cross_compile.build");
+        }
+
+        public async compileProject() {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode Component Editor",
+                );
+            }
+            this.terminal.show();
+            this.terminal.sendText("cd builddir");
+            this.terminal.sendText("meson compile");
+            this.terminal.sendText("cd ..");
         }
 
         constructor() {
@@ -60,7 +83,7 @@ export namespace ModelStateMachine {
                                     modelExists = true;
                                 }
                             }
-                            catch (e : any) {
+                            catch (e: any) {
                                 if (e.code !== "EntryNotFound") {
                                     modelExists = false;
                                 }
