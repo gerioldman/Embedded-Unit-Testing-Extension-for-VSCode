@@ -1,0 +1,12 @@
+option(
+    'target_tests', 
+    type: 'boolean', 
+    value: false, 
+    description: 'Switch to enable/disable building and running of tests for the target'
+)
+option(
+    'target_executable',
+    type: 'boolean',
+    value: false,
+    description: 'Switch to enable/disable building and running of tests for the target'
+)

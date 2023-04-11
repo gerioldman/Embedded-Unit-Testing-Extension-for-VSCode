@@ -1,0 +1,33 @@
+# This file is part of the Meson build system.
+# For cross-compilation, you need to specify the compiler and linker
+# commands for the target machine. You can also specify the target
+# machine's CPU family and endianness.
+# A full list of options is available at:
+# http://mesonbuild.com/Cross-compilation.html
+
+[binaries]
+c       = 'gcc' # C compiler for the host machine
+cpp     = 'g++' # C++ compiler for the host machine
+ld      = 'ld' # Linker for the host machine
+ar      = 'ar' # Archiver for the host machine
+as      = 'as' # ...
+size    = 'size' # ...
+objdump = 'objdump' # ...
+objcopy = 'objcopy' # ...
+strip   = 'strip' # ...
+gdb     = 'gdc' # ...
+[built-in options]
+c_args      =   [
+    # Add compiler arguments here needed for compiling C code for the target machine.
+    # For example you can add -mcpu=cortex-m4 to compile for Cortex-M4 MCUs.
+                ]
+c_link_args =   [
+    # Add linker arguments here needed for linking C code for the target machine.
+    # For example you can add -mfloat-abi=hard to tell the linker to use the hard-float ABI.
+                ]
+# Description of the host machine            
+[host_machine]
+system = 'windows'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
