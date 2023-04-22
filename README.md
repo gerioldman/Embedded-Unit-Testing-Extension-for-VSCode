@@ -1,71 +1,73 @@
-# vscodeextension-sandbox README
+# Embedded Unit Testing
 
-This is the README for your extension "vscodeextension-sandbox". After writing up a brief description, we recommend including the following sections.
+The extension is aiming to create an easier way of unit testing C applications made for embedded systems. The main features are generating a Meson project skeleton based on a model that is created in separate view, automatic stubbing, and support target testing, or at least try to make it easier to set up.
 
 ## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Units, test suites, and test cases
+The basic idea of the extension is that the software written is separated into source and header file pairs, which can be thought of as units. These can be modelled as a tree structure, where each unit can have multiple test suites, and each test suite can have multiple test cases. The test cases are the actual tests that are run on the unit.
+### Stubbing, mocking, and faking
+The extension is also aiming to provide automatic mocking, this is done by a Python script during compilation. The script will generate a mock for functions that can be called by the unit, but not defined in the unit itself. The mock will be a function that will behave based on previous configuration. This configuration can be done in the test case implementation itself, by accessing the TEST_STUB variable. The TEST_STUB variable is a dictionary that contains the mock functions, and can be accessed by the test case implementation. The test case implementation can then configure the mock functions to behave in a certain way, and then call the unit under test. The unit under test will then call the mock function, which will behave according to the configuration. This allows the test case implementation to test the unit under test in a controlled environment, without having to worry about the behaviour of other units.
+### Meson project skeleton
+The extension will also generate a Meson project skeleton, which can be used to compile the unit tests, and with some additional configuration, the whole software. The folder structure of the project skeleton is as follows:
+```
+project_root
+├── builddir
+├── components
+│   ├── componentA
+│   │   ├── Unit
+│   │   │   ├── include
+│   │   │   │   └── componentA.h
+│   │   │   └── src
+│   │   │       └── componentA.c
+│   │   └── Unittest
+│   │       ├── include
+│   │       │   └── userstub.h
+│   │       └── src
+│   │           ├── userstub.c
+│   │           ├── TestSuites.c
+│   │           └── TestSuite1.c
+│   └── componentB
+│       ├── Unit
+│       │   ├── include
+│       │   │   └── componentB.h
+│       │   └── src
+│       │       └── componentB.c
+│       └── Unittest
+│           ├── include
+│           │   └── userstub.h
+│           └── src
+│               ├── userstub.c
+│               ├── TestSuites.c
+│               └── TestSuite1.c
+├── integration
+│   ├── Any additional file you do not wish to test
+│   └── meson.build
+├── scripts
+│   ├── flash_binary.py
+│   ├── RTT_TestRunner.py
+│   └── UnitTestSupport.py
+├── UnitTestRunner
+├── gcovr.cfg
+├── meson.build
+└── meson_options.txt
+```
+It will contain a host target test, and a platform target test. The host target test will not run by default, you have to set up a way to read the results from the target, so this option can be disabled by meson_options.txt file. The whole software build can be disabled as well. The scripts folder contains three scripts, one for flashing the binary to the target, one for running the tests on the target by Segger RTT (I advise that you try to set this up), and one for creating the mocks. The UnitTestRunner folder contains the Unit test framework, which is my own implementation. The gcovr.cfg file is used for generating code coverage reports. The meson.build file is the main build file, and the meson_options.txt file is used to configure the build.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+The extension requires that you have Python 3 installed, and that you have the Python packages Meson, gcovr, PyCParser. The extension also requires Ninja to be installed, and that you have a C compiler installed, one for the host, and another for target.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+Currently there are no extension settings.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Currently there are no known issues.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release of Embedded Unit Testing
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
