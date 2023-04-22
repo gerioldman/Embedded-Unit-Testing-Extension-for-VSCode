@@ -56,9 +56,17 @@ export namespace ModelStateMachine {
                 );
             }
             this.terminal.show();
-            this.terminal.sendText("cd builddir");
-            this.terminal.sendText("meson compile");
-            this.terminal.sendText("cd ..");
+            this.terminal.sendText("cd builddir;meson compile;cd ..");
+        }
+
+        public async flashProject() {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode Component Editor",
+                );
+            }
+            this.terminal.show();
+            this.terminal.sendText("cd builddir;meson compile flash;cd ..");
         }
 
         constructor() {

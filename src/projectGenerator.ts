@@ -24,7 +24,7 @@ export namespace ProjectGenerator {
             }
         }
 
-        async copyFromTemplateAndReplace(templateUri: vscode.Uri, targetUri: vscode.Uri, replaceMap: Array<[RegExp, string]>) {
+        async copyFromTemplateAndReplace(templateUri: vscode.Uri, targetUri: vscode.Uri, replaceMap: Array<[RegExp, string]>, replaceMapForOverWrite: Array<[RegExp, string]>) {
             let targetExists = false;
             try {
                 await vscode.workspace.fs.stat(targetUri);
@@ -41,7 +41,35 @@ export namespace ProjectGenerator {
             }
 
             if (targetExists) {
-                this.logWarning("Target file " + targetUri.fsPath + " already exists, not overwriting it!");
+                if (replaceMapForOverWrite.length !== 0) {
+                    this.logInfo("Target file " + targetUri + " already exists, overwriting only relavant parts!");
+                    let targetContent: Uint8Array;
+                    try {
+                        targetContent = await vscode.workspace.fs.readFile(targetUri);
+                    }
+                    catch (e) {
+                        this.logError("Error reading target file: " + e);
+                        throw new Error("Error reading target file: " + e);
+                    }
+
+                    let targetContentString: string = new TextDecoder().decode(targetContent);
+                    for (let [regex, replacement] of replaceMapForOverWrite) {
+                        this.logInfo("Replacing " + regex + " with " + replacement + " in " + targetUri.fsPath);
+                        targetContentString = targetContentString.replace(regex, replacement);
+                    }
+
+                    let targetContentNew = new TextEncoder().encode(targetContentString);
+                    try {
+                        await vscode.workspace.fs.writeFile(targetUri, targetContentNew);
+                    }
+                    catch (e) {
+                        this.logError("Error writing target file: " + e);
+                        throw new Error("Error writing target file: " + e);
+                    }
+                }
+                else {
+                    this.logWarning("Target file " + targetUri + " already exists, not overwriting it!");
+                }
                 return;
             }
 
@@ -101,22 +129,22 @@ export namespace ProjectGenerator {
                 async progress => {
 
                     this.logInfo("Starting to generate project");
-                    progress.report({ message: 'Starting to generate project',increment: 0 });
-                    
+                    progress.report({ message: 'Starting to generate project', increment: 0 });
+
                     // copy file from template to workspace
-                    progress.report({ message: 'Copying files' ,increment: 25 });
+                    progress.report({ message: 'Copying files', increment: 25 });
                     await this.createFoldersAndCopyContents();
                     await this.copyFiles();
-                    
+
                     // create components from model
-                    progress.report({ message: 'Creating components',increment: 25 });
+                    progress.report({ message: 'Creating components', increment: 25 });
                     await this.createComponents();
-                    
+
                     // create meson.build file for components
-                    progress.report({ message: 'Creating component database meson.build file',increment: 25 });
+                    progress.report({ message: 'Creating component database meson.build file', increment: 25 });
                     await this.createDataBaseMesonFile();
 
-                    progress.report({ message: 'Finished generating project',increment: 25 });
+                    progress.report({ message: 'Finished generating project', increment: 25 });
                     this.logInfo("Finished generating project");
                 }
             );
@@ -176,27 +204,35 @@ export namespace ProjectGenerator {
                 // copy files from template to component folder
                 let templateUri = vscode.Uri.joinPath(templateFolderUri, "Unit", "include", "unit_template.h");
                 let targetUri = vscode.Uri.joinPath(componentHeaderFileUri, component.name + ".h");
-                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap);
+                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "Unit", "src", "unit_template.c");
                 targetUri = vscode.Uri.joinPath(componentSourceFileUri, component.name + ".c");
-                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap);
+                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "include", "userstub.h");
                 targetUri = vscode.Uri.joinPath(componentTestHeaderFileUri, "userstub.h");
-                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap);
+                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "src", "userstub.c");
                 targetUri = vscode.Uri.joinPath(componentTestSourceFileUri, "userstub.c");
-                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap);
+                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "src", "TestSuites.c");
                 targetUri = vscode.Uri.joinPath(componentTestSourceFileUri, "TestSuites.c");
-                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap);
+                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, [
+                    [/(?:extern\s*TestSuite\s*[A-Za-z0-9_]+\s*;\s*)+/, component.testSuites.map(testSuite => "extern TestSuite " + testSuite.name + ";\n").join("") + "\n"],
+                    [/TestSuite\*\s*testSuites\s*\[\]\s*=\s*{\s*(?:\s*&[A-Za-z0-9_]+\s*,\s*)+\s*TEST_SUITE_END\s*}\s*;/, 'TestSuite* testSuites[] = {\n\t' + component.testSuites.map(testSuite => "&" + testSuite.name).join(",\n\t") + ',\n\tTEST_SUITE_END\n};']
+                ]);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "meson.build");
                 targetUri = vscode.Uri.joinPath(componentFolderUri, "meson.build");
-                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap);
+                await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, [
+                    [
+                        /component_test_files\s*=\s*files\s*\(\s*\[\s*(?:\'UnitTest\/src\/\w+\.c\'\s*,?\s*)+\]\s*\)/,
+                        "component_test_files = files([\n\t\'UnitTest/src/TestSuites.c\',\n\t\'UnitTest/src/userstub.c\',\n\t" + component.testSuites.map(testSuite => "\'UnitTest/src/" + testSuite.name + ".c\'").join(",\n\t") + "\n])"
+                    ]
+                ]);
 
                 // create test suites
                 for (let testSuite of component.testSuites) {
@@ -210,7 +246,39 @@ export namespace ProjectGenerator {
 
                     templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "src", "TStemplate.c");
                     targetUri = vscode.Uri.joinPath(componentTestSourceFileUri, testSuite.name + ".c");
-                    await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMapForSuite);
+                    try {
+                        let content = await vscode.workspace.fs.readFile(targetUri);
+
+                        let contentString = new TextDecoder().decode(content);
+
+                        for (let testCase of testSuite.testCases) {
+                            let match = contentString.match(new RegExp("void\\s*" + testCase.name + "\\s*\\(\\s*\\)", ""));
+                            if (match === null) {
+                                if (contentString.match(/\/\* @@TEST_CASES_UPDATE@@ \*\//) !== null) {
+                                    contentString = contentString.replace(/\/\* @@TEST_CASES_UPDATE@@ \*\//, "void " + testCase.name + "(){\n\t/* Add test implementation */\n}\n\n/* @@TEST_CASES@@ */");
+                                }
+                            }
+                            else {
+                                // Nothing to do, as the test case already exists
+                            }
+                        }
+                        await vscode.workspace.fs.writeFile(targetUri, new TextEncoder().encode(contentString));
+
+                    } catch (error: any) {
+                        if (error.code === 'FileNotFound') {
+                            // File does not exist, so we can create it
+                        }
+                        else {
+                            this.logError(error);
+                            throw error;
+                        }
+                    }
+                    await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMapForSuite, [
+                        [
+                            /TestSuite\s*\S+\s*=\s*{\s*\.name\s*=\s*\"\S+\",\s*\.TestCases\s*=\s*{\s*(?:TEST_CASE_ENTRY\(\S+\),?\s*)+},?(\s*(?:\.(?:cleanUpAfter_funcPtr|cleanUpBefore_funcPtr)\s*=\s*\S+\s*,?\s*)*)};/,
+                            'TestSuite ' + testSuite.name + ' = {\n\t.name = \"' + testSuite.name + '\",\n\t.TestCases = \n\t{\n\t\t' + testSuite.testCases.map(testCase => "TEST_CASE_ENTRY(" + testCase.name + ")").join(",\n\t\t") + ",\n\t\tTEST_CASE_ENTRY(TEST_CASE_END),\n\t}," + "$1" + "};"
+                        ]
+                    ]);
                 }
 
 

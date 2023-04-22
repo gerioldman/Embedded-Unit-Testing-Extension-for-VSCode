@@ -23,6 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     let disposable7 = vscode.commands.registerCommand('component_editor.generateProject', 	( ) => modelStateMachine.projectGenerator.generateProject());
     let disposable8 = vscode.commands.registerCommand('component_editor.configureProject', 	( ) => modelStateMachine.configureProject());
     let disposable9 = vscode.commands.registerCommand('component_editor.compileProject', 	( ) => modelStateMachine.compileProject());
+	let disposable10 = vscode.commands.registerCommand('component_editor.flashProject', 	( ) => modelStateMachine.flashProject());
 
 	modelStateMachine.process();
 
@@ -36,7 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
 		disposable6,
 		disposable7,
 		disposable8,
-		disposable9
+		disposable9,
+		disposable10
 	);
 	
 }
