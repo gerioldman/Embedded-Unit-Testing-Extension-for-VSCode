@@ -1,8 +1,8 @@
 {
-  "name": "vscodeextension-sandbox",
+  "name": "embedded_unit_testing_extension",
   "publisher": "gerioldman",
-  "displayName": "VSCodeExtension-Sandbox",
-  "description": "sandbox project",
+  "displayName": "Embedded Unit Testing Extension",
+  "description": "Embedded Unit Testing Extension for VS Code. Based on the C language and Meson build system.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.75.0"
@@ -31,6 +31,11 @@
         },
         {
           "command": "component_editor.compileProject",
+          "when": "view == component_editor",
+          "group": "navigation"
+        },
+        {
+          "command": "component_editor.flashProject",
           "when": "view == component_editor",
           "group": "navigation"
         }
@@ -108,6 +113,11 @@
         "command": "component_editor.compileProject",
         "title": "Compile Project",
         "icon": "$(run-all)"
+      },
+      {
+        "command": "component_editor.flashProject",
+        "title": "Flash Project",
+        "icon": "$(plug)"
       }
     ],
     "viewsContainers": {
