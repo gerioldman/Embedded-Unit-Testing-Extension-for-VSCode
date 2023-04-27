@@ -3,7 +3,7 @@
   "publisher": "gerioldman",
   "displayName": "Embedded Unit Testing Extension",
   "description": "Embedded Unit Testing Extension for VS Code. Based on the C language and Meson build system.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.75.0"
   },
