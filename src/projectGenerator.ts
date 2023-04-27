@@ -158,7 +158,7 @@ export namespace ProjectGenerator {
             }
 
             // check if component folder exists
-            let extensionUri = vscode.extensions.getExtension("gerioldman.vscodeextension-sandbox")?.extensionUri;
+            let extensionUri = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionUri;
             let templateFolderUri = vscode.Uri.joinPath(extensionUri!, "templates", "unit_template");
 
             for (let component of this.model.components) {
@@ -318,7 +318,7 @@ export namespace ProjectGenerator {
 
         async copyFiles() {
             this.logInfo("Starting to copy files");
-            let extensionUri = vscode.extensions.getExtension("gerioldman.vscodeextension-sandbox")?.extensionUri;
+            let extensionUri = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionUri;
             let projectTemplateFolderUri = vscode.Uri.joinPath(extensionUri!, "templates", "project_template");
             let workspaceFolderUri = vscode.workspace.workspaceFolders![0].uri;
 
@@ -440,218 +440,226 @@ export namespace ProjectGenerator {
             this.logInfo("Starting to create folders");
 
             let folderUri = vscode.workspace.workspaceFolders![0].uri;
-            let extensionUri = vscode.extensions.getExtension("gerioldman.vscodeextension-sandbox")?.extensionUri;
+            let extensionUri = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionUri;
 
-            // get folders from project template folder and create them in workspace folder
-            let projectTemplateFolderUri = vscode.Uri.joinPath(extensionUri!, "templates", "project_template");
-            let results = await vscode.workspace.fs.readDirectory(projectTemplateFolderUri);
+            if (extensionUri !== undefined) {
 
-            if (
-                !(
-                    results.find(
-                        (element) => {
-                            return element[0] === "components" && element[1] === vscode.FileType.Directory;
-                        }) !== undefined
-                    &&
-                    results.find(
-                        (element) => {
-                            return element[0] === "integration" && element[1] === vscode.FileType.Directory;
-                        }) !== undefined
-                    &&
-                    results.find(
-                        (element) => {
-                            return element[0] === "scripts" && element[1] === vscode.FileType.Directory;
-                        }) !== undefined
-                    &&
-                    results.find(
-                        (element) => {
-                            return element[0] === "UnitTestRunner" && element[1] === vscode.FileType.Directory;
-                        }) !== undefined
-                )
-            ) {
-                throw new Error("Template folders missing from extension!");
-            }
+                // get folders from project template folder and create them in workspace folder
+                let projectTemplateFolderUri = vscode.Uri.joinPath(extensionUri, "templates", "project_template");
+                let results = await vscode.workspace.fs.readDirectory(projectTemplateFolderUri);
 
-            for (let element of results) {
-                if (element[1] === vscode.FileType.Directory) {
-                    switch (element[0]) {
-                        case "components": {
-                            let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
-                            try {
-                                let result = await vscode.workspace.fs.stat(folderToCreate);
-                                if (result.type === vscode.FileType.Directory) {
-                                    this.logInfo("Folder already exists: " + folderToCreate.path);
-                                }
-                            }
-                            catch (e: any) {
-                                if (e.code === "FileNotFound") {
-                                    this.logInfo("Creating folder: " + folderToCreate.path);
-                                    try {
-                                        await vscode.workspace.fs.createDirectory(folderToCreate);
-                                    }
-                                    catch (e: any) {
-                                        this.logError("Error creating folder: " + e);
-                                        throw new Error("Error creating folder: " + e);
-                                    }
-                                }
-                                else {
-                                    throw new Error("Error checking if folder exists: " + e);
-                                }
-                            }
-                        }
-                            break;
-                        case "integration": {
-                            let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
-                            try {
-                                let result = await vscode.workspace.fs.stat(folderToCreate);
-                                if (result.type === vscode.FileType.Directory) {
-                                    this.logInfo("Folder already exists: " + folderToCreate.path);
-                                }
-                            }
-                            catch (e: any) {
-                                if (e.code === "FileNotFound") {
-                                    this.logInfo("Creating folder: " + folderToCreate.path);
-                                    try {
-                                        await vscode.workspace.fs.createDirectory(folderToCreate);
-                                    }
-                                    catch (e: any) {
-                                        this.logError("Error creating folder: " + e);
-                                        throw new Error("Error creating folder: " + e);
-                                    }
-                                }
-                                else {
-                                    throw new Error("Error checking if folder exists: " + e);
-                                }
-                            }
+                if (
+                    !(
+                        results.find(
+                            (element) => {
+                                return element[0] === "components" && element[1] === vscode.FileType.Directory;
+                            }) !== undefined
+                        &&
+                        results.find(
+                            (element) => {
+                                return element[0] === "integration" && element[1] === vscode.FileType.Directory;
+                            }) !== undefined
+                        &&
+                        results.find(
+                            (element) => {
+                                return element[0] === "scripts" && element[1] === vscode.FileType.Directory;
+                            }) !== undefined
+                        &&
+                        results.find(
+                            (element) => {
+                                return element[0] === "UnitTestRunner" && element[1] === vscode.FileType.Directory;
+                            }) !== undefined
+                    )
+                ) {
+                    throw new Error("Template folders missing from extension!");
+                }
 
-                            let integrationFolderUri = vscode.Uri.joinPath(folderUri, "integration");
-                            let integrationExtensionUri = vscode.Uri.joinPath(projectTemplateFolderUri, "integration");
-
-                            let results = await vscode.workspace.fs.readDirectory(integrationExtensionUri);
-
-                            // Check existence of cross_compile.build file
-
-                            if (
-                                !(
-                                    results.find(
-                                        (element) => {
-                                            return element[0] === "cross_compile.build" && element[1] === vscode.FileType.File;
-                                        }) !== undefined
-                                    &&
-                                    results.find(
-                                        (element) => {
-                                            return element[0] === "meson.build" && element[1] === vscode.FileType.File;
-                                        }) !== undefined
-                                )
-                            ) {
-                                throw new Error("Template files missing from extension!");
-                            }
-
-                            {
-                                let sourceFile = vscode.Uri.joinPath(integrationExtensionUri, "cross_compile.build");
-                                let targetFile = vscode.Uri.joinPath(integrationFolderUri, "cross_compile.build");
+                for (let element of results) {
+                    if (element[1] === vscode.FileType.Directory) {
+                        switch (element[0]) {
+                            case "components": {
+                                let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
                                 try {
-                                    await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
-                                    this.logInfo("Copying cross_compile.build file");
+                                    let result = await vscode.workspace.fs.stat(folderToCreate);
+                                    if (result.type === vscode.FileType.Directory) {
+                                        this.logInfo("Folder already exists: " + folderToCreate.path);
+                                    }
                                 }
                                 catch (e: any) {
-                                    if (e.code === "FileExists") {
-                                        this.logWarning("cross_compile.build already exists in workspace folder, not overwriting it!");
+                                    if (e.code === "FileNotFound") {
+                                        this.logInfo("Creating folder: " + folderToCreate.path);
+                                        try {
+                                            await vscode.workspace.fs.createDirectory(folderToCreate);
+                                        }
+                                        catch (e: any) {
+                                            this.logError("Error creating folder: " + e);
+                                            throw new Error("Error creating folder: " + e);
+                                        }
                                     }
                                     else {
-                                        this.logError("Error copying file: " + e);
-                                        throw new Error("Error copying file: " + e);
+                                        throw new Error("Error checking if folder exists: " + e);
                                     }
                                 }
                             }
-
-                            {
-                                let sourceFile = vscode.Uri.joinPath(integrationExtensionUri, "meson.build");
-                                let targetFile = vscode.Uri.joinPath(integrationFolderUri, "meson.build");
+                                break;
+                            case "integration": {
+                                let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
                                 try {
-                                    await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
-                                    this.logInfo("Copying meson.build file");
+                                    let result = await vscode.workspace.fs.stat(folderToCreate);
+                                    if (result.type === vscode.FileType.Directory) {
+                                        this.logInfo("Folder already exists: " + folderToCreate.path);
+                                    }
                                 }
                                 catch (e: any) {
-                                    if (e.code === "FileExists") {
-                                        this.logWarning("meson.build already exists in workspace folder, not overwriting it!");
+                                    if (e.code === "FileNotFound") {
+                                        this.logInfo("Creating folder: " + folderToCreate.path);
+                                        try {
+                                            await vscode.workspace.fs.createDirectory(folderToCreate);
+                                        }
+                                        catch (e: any) {
+                                            this.logError("Error creating folder: " + e);
+                                            throw new Error("Error creating folder: " + e);
+                                        }
                                     }
                                     else {
-                                        this.logError("Error copying file: " + e);
-                                        throw new Error("Error copying file: " + e);
+                                        throw new Error("Error checking if folder exists: " + e);
                                     }
                                 }
-                            }
 
+                                let integrationFolderUri = vscode.Uri.joinPath(folderUri, "integration");
+                                let integrationExtensionUri = vscode.Uri.joinPath(projectTemplateFolderUri, "integration");
 
-                        }
-                            break;
-                        case "scripts": {
-                            let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
-                            let folderToCopyFrom = vscode.Uri.joinPath(projectTemplateFolderUri, element[0]);
+                                let results = await vscode.workspace.fs.readDirectory(integrationExtensionUri);
 
-                            try {
-                                let result = await vscode.workspace.fs.stat(folderToCreate);
-                                if (result.type === vscode.FileType.Directory) {
-                                    this.logInfo("Folder already exists: " + folderToCreate.path);
+                                // Check existence of cross_compile.build file
+
+                                if (
+                                    !(
+                                        results.find(
+                                            (element) => {
+                                                return element[0] === "cross_compile.build" && element[1] === vscode.FileType.File;
+                                            }) !== undefined
+                                        &&
+                                        results.find(
+                                            (element) => {
+                                                return element[0] === "meson.build" && element[1] === vscode.FileType.File;
+                                            }) !== undefined
+                                    )
+                                ) {
+                                    throw new Error("Template files missing from extension!");
                                 }
-                            }
-                            catch (e: any) {
-                                if (e.code === "FileNotFound") {
-                                    this.logInfo("Creating folder: " + folderToCreate.path);
+
+                                {
+                                    let sourceFile = vscode.Uri.joinPath(integrationExtensionUri, "cross_compile.build");
+                                    let targetFile = vscode.Uri.joinPath(integrationFolderUri, "cross_compile.build");
                                     try {
-                                        await vscode.workspace.fs.createDirectory(folderToCreate);
+                                        await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
+                                        this.logInfo("Copying cross_compile.build file");
                                     }
                                     catch (e: any) {
-                                        this.logError("Error creating folder: " + e);
-                                        throw new Error("Error creating folder: " + e);
+                                        if (e.code === "FileExists") {
+                                            this.logWarning("cross_compile.build already exists in workspace folder, not overwriting it!");
+                                        }
+                                        else {
+                                            this.logError("Error copying file: " + e);
+                                            throw new Error("Error copying file: " + e);
+                                        }
                                     }
                                 }
-                                else {
-                                    throw new Error("Error checking if folder exists: " + e);
+
+                                {
+                                    let sourceFile = vscode.Uri.joinPath(integrationExtensionUri, "meson.build");
+                                    let targetFile = vscode.Uri.joinPath(integrationFolderUri, "meson.build");
+                                    try {
+                                        await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
+                                        this.logInfo("Copying meson.build file");
+                                    }
+                                    catch (e: any) {
+                                        if (e.code === "FileExists") {
+                                            this.logWarning("meson.build already exists in workspace folder, not overwriting it!");
+                                        }
+                                        else {
+                                            this.logError("Error copying file: " + e);
+                                            throw new Error("Error copying file: " + e);
+                                        }
+                                    }
                                 }
+
+
                             }
+                                break;
+                            case "scripts": {
+                                let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
+                                let folderToCopyFrom = vscode.Uri.joinPath(projectTemplateFolderUri, element[0]);
 
-                            let results = await vscode.workspace.fs.readDirectory(folderToCopyFrom);
-
-                            for (let result of results) {
-                                let sourceFile = vscode.Uri.joinPath(folderToCopyFrom, result[0]);
-                                let targetFile = vscode.Uri.joinPath(folderToCreate, result[0]);
                                 try {
-                                    await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
+                                    let result = await vscode.workspace.fs.stat(folderToCreate);
+                                    if (result.type === vscode.FileType.Directory) {
+                                        this.logInfo("Folder already exists: " + folderToCreate.path);
+                                    }
                                 }
                                 catch (e: any) {
-                                    if (e.code === "FileExists") {
-                                        this.logWarning(targetFile.path + " already exists in workspace folder, not overwriting it!");
+                                    if (e.code === "FileNotFound") {
+                                        this.logInfo("Creating folder: " + folderToCreate.path);
+                                        try {
+                                            await vscode.workspace.fs.createDirectory(folderToCreate);
+                                        }
+                                        catch (e: any) {
+                                            this.logError("Error creating folder: " + e);
+                                            throw new Error("Error creating folder: " + e);
+                                        }
                                     }
                                     else {
-                                        this.logError("Error copying file: " + e);
-                                        throw new Error("Error copying file: " + e);
+                                        throw new Error("Error checking if folder exists: " + e);
+                                    }
+                                }
+
+                                let results = await vscode.workspace.fs.readDirectory(folderToCopyFrom);
+
+                                for (let result of results) {
+                                    let sourceFile = vscode.Uri.joinPath(folderToCopyFrom, result[0]);
+                                    let targetFile = vscode.Uri.joinPath(folderToCreate, result[0]);
+                                    try {
+                                        await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
+                                    }
+                                    catch (e: any) {
+                                        if (e.code === "FileExists") {
+                                            this.logWarning(targetFile.path + " already exists in workspace folder, not overwriting it!");
+                                        }
+                                        else {
+                                            this.logError("Error copying file: " + e);
+                                            throw new Error("Error copying file: " + e);
+                                        }
                                     }
                                 }
                             }
-                        }
-                            break;
-                        case "UnitTestRunner": {
-                            let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
-                            let folderToCopyFrom = vscode.Uri.joinPath(projectTemplateFolderUri, element[0]);
+                                break;
+                            case "UnitTestRunner": {
+                                let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
+                                let folderToCopyFrom = vscode.Uri.joinPath(projectTemplateFolderUri, element[0]);
 
-                            try {
-                                vscode.workspace.fs.copy(folderToCopyFrom, folderToCreate, { overwrite: true });
+                                try {
+                                    vscode.workspace.fs.copy(folderToCopyFrom, folderToCreate, { overwrite: true });
+                                }
+                                catch (e: any) {
+                                    this.logError("Error copying folder: " + e);
+                                    throw new Error("Error copying folder: " + e);
+                                }
                             }
-                            catch (e: any) {
-                                this.logError("Error copying folder: " + e);
-                                throw new Error("Error copying folder: " + e);
-                            }
+                                break;
+                            default:
+                                throw new Error("Unknown folder: " + element[0]);
+                                break;
                         }
-                            break;
-                        default:
-                            throw new Error("Unknown folder: " + element[0]);
-                            break;
                     }
                 }
+                this.logInfo("Folders created");
             }
-            this.logInfo("Folders created");
+            else
+            {
+                this.logError("Error getting extension folder");
+                throw new Error("Error getting extension folder");
+            }
         }
     }
 }

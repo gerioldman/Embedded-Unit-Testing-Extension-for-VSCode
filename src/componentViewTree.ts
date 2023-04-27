@@ -47,7 +47,7 @@ export namespace ComponentViewTree {
             this.type = type;
             if (type === Type.component) {
                 this.contextValue = 'component';
-                this.iconPath = vscode.Uri.file(vscode.extensions.getExtension('gerioldman.vscodeextension-sandbox')?.extensionPath + '/resources/component.svg');
+                this.iconPath = vscode.Uri.file(vscode.extensions.getExtension('gerioldman.embedded-unit-testing-extension')?.extensionPath + '/resources/component.svg');
             }
             else if (type === Type.testSuite) {
                 this.contextValue = 'testSuite';
@@ -360,7 +360,7 @@ export namespace ComponentViewTree {
          */
         addComponent(component: ViewTreeItem) {
             if (component.type === Type.component) {
-                component.iconPath = vscode.extensions.getExtension("gerioldman.vscodeextension-sandbox")?.extensionPath + "/resources/component.svg";
+                component.iconPath = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionPath + "/resources/component.svg";
                 this.treeData.push(component);
                 this.model?.viewTreeListener(component, ChangeType.create);
                 this._onDidChangeTreeData.fire(undefined);
