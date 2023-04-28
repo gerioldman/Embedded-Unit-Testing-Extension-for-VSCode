@@ -21,6 +21,7 @@ preprocessed_file = cc.preprocess(
         ],
         compile_args: [
                 stub_args,
+                platform_cflags,
                 '-DPLATFORM=0',
                 '-DUNIT_TEST=1',
                 '-nostdinc'
