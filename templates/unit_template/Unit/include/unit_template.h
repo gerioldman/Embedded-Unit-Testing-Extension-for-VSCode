@@ -1,10 +1,10 @@
 /**
- * @file @@COMPONENT_NAME@@.h
+ * @file @@unit_NAME@@.h
  * @brief TODO - Add a brief description of this file.
  * @date @@DATE@@
 */
-#ifndef @@COMPONENT_NAME_UPPERCASE@@_H
-#define @@COMPONENT_NAME_UPPERCASE@@_H
+#ifndef @@unit_NAME_UPPERCASE@@_H
+#define @@unit_NAME_UPPERCASE@@_H
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -21,4 +21,4 @@
 /* Function declarations -----------------------------------------------------*/
 
 
-#endif /* @@COMPONENT_NAME_UPPERCASE@@_H */
+#endif /* @@unit_NAME_UPPERCASE@@_H */

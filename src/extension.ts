@@ -13,17 +13,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let modelStateMachine = new ModelStateMachine.ModelStateMachine();
 
-	let disposable0 = vscode.window.registerTreeDataProvider('component_editor', modelStateMachine.componentViewTreeView);
-    let disposable1 = vscode.commands.registerCommand('component_editor.createComponent', 	( ) => modelStateMachine.componentViewTreeView.createComponent(context));
-    let disposable2 = vscode.commands.registerCommand('component_editor.deleteComponent', 	(r) => modelStateMachine.componentViewTreeView.deleteComponent(r));
-    let disposable3 = vscode.commands.registerCommand('component_editor.createTestSuite', 	(r) => modelStateMachine.componentViewTreeView.createTestSuite(r));
-    let disposable4 = vscode.commands.registerCommand('component_editor.deleteTestSuite', 	(r) => modelStateMachine.componentViewTreeView.deleteTestSuite(r));
-    let disposable5 = vscode.commands.registerCommand('component_editor.createTestCase', 	(r) => modelStateMachine.componentViewTreeView.createTestCase(r));
-    let disposable6 = vscode.commands.registerCommand('component_editor.deleteTestCase', 	(r) => modelStateMachine.componentViewTreeView.deleteTestCase(r));
-    let disposable7 = vscode.commands.registerCommand('component_editor.generateProject', 	( ) => modelStateMachine.projectGenerator.generateProject(context));
-    let disposable8 = vscode.commands.registerCommand('component_editor.configureProject', 	( ) => modelStateMachine.configureProject(context));
-    let disposable9 = vscode.commands.registerCommand('component_editor.compileProject', 	( ) => modelStateMachine.compileProject(context));
-	let disposable10 = vscode.commands.registerCommand('component_editor.flashProject', 	( ) => modelStateMachine.flashProject(context));
+	let disposable0 = vscode.window.registerTreeDataProvider('unit_editor', modelStateMachine.unitViewTreeView);
+    let disposable1 = vscode.commands.registerCommand('unit_editor.createunit', 	( ) => modelStateMachine.unitViewTreeView.createunit(context));
+    let disposable2 = vscode.commands.registerCommand('unit_editor.deleteunit', 	(r) => modelStateMachine.unitViewTreeView.deleteunit(r));
+    let disposable3 = vscode.commands.registerCommand('unit_editor.createTestSuite', 	(r) => modelStateMachine.unitViewTreeView.createTestSuite(r));
+    let disposable4 = vscode.commands.registerCommand('unit_editor.deleteTestSuite', 	(r) => modelStateMachine.unitViewTreeView.deleteTestSuite(r));
+    let disposable5 = vscode.commands.registerCommand('unit_editor.createTestCase', 	(r) => modelStateMachine.unitViewTreeView.createTestCase(r));
+    let disposable6 = vscode.commands.registerCommand('unit_editor.deleteTestCase', 	(r) => modelStateMachine.unitViewTreeView.deleteTestCase(r));
+    let disposable7 = vscode.commands.registerCommand('unit_editor.generateProject', 	( ) => modelStateMachine.projectGenerator.generateProject(context));
+    let disposable8 = vscode.commands.registerCommand('unit_editor.configureProject', 	( ) => modelStateMachine.configureProject(context));
+    let disposable9 = vscode.commands.registerCommand('unit_editor.compileProject', 	( ) => modelStateMachine.compileProject(context));
+	let disposable10 = vscode.commands.registerCommand('unit_editor.flashProject', 	( ) => modelStateMachine.flashProject(context));
 
 	modelStateMachine.process();
 

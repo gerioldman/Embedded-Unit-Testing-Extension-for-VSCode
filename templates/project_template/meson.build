@@ -25,12 +25,12 @@ unittest_include    = []
 unittest_platform_source     = []
 unittest_platform_include    = []
 
-# Variables containing the source files and include directories for the components
-components_source   = []
-components_include  = []
+# Variables containing the source files and include directories for the units
+units_source   = []
+units_include  = []
 
 # Variables containing the source files and include directories for integration code. 
-# That is code that is not part of the components, but is used to integrate the components
+# That is code that is not part of the units, but is used to integrate the units
 integration_source  = []
 integration_include = []
 
@@ -60,7 +60,7 @@ test_runner = files('scripts/RTT_TestRunner.py')
 # Subdirectories
 subdir('UnitTestRunner')
 subdir('integration')
-subdir('components')
+subdir('units')
 
 ##########################################################################################
 # Targets
@@ -80,13 +80,13 @@ if get_option('target_executable') == true
 ELF = executable(meson.project_name(),
     name_suffix: 'elf',
     sources: [
-        components_source,
+        units_source,
         integration_source,
         platform_source,
         platform_source_bareMinimum
     ],
     include_directories: [
-        components_include,
+        units_include,
         integration_include,
         platform_include
     ],

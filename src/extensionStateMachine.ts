@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { ModelHandler } from './modelHandler';
-import { ComponentViewTree } from './componentViewTree';
+import { unitViewTree } from './unitViewTree';
 import { ProjectGenerator } from './projectGenerator';
 
 export namespace ModelStateMachine {
@@ -23,7 +23,7 @@ export namespace ModelStateMachine {
         state: State = State.initial;
         transitions: Transition[] = [];
         modelHandler: ModelHandler.Model = new ModelHandler.Model();
-        componentViewTreeView: ComponentViewTree.ComponentView = new ComponentViewTree.ComponentView(this.modelHandler);
+        unitViewTreeView: unitViewTree.unitView = new unitViewTree.unitView(this.modelHandler);
         projectGenerator: ProjectGenerator.ProjectGenerator = new ProjectGenerator.ProjectGenerator(this.modelHandler);
         terminal: vscode.Terminal | undefined;
 
@@ -42,7 +42,7 @@ export namespace ModelStateMachine {
         public async configureProject(_context: vscode.ExtensionContext) {
             if (this.terminal === undefined) {
                 this.terminal = vscode.window.createTerminal(
-                    "VSCode Component Editor",
+                    "VSCode unit Editor",
                 );
             }
             this.terminal.show();
@@ -52,7 +52,7 @@ export namespace ModelStateMachine {
         public async compileProject(_context: vscode.ExtensionContext) {
             if (this.terminal === undefined) {
                 this.terminal = vscode.window.createTerminal(
-                    "VSCode Component Editor",
+                    "VSCode unit Editor",
                 );
             }
             this.terminal.show();
@@ -62,7 +62,7 @@ export namespace ModelStateMachine {
         public async flashProject(_context: vscode.ExtensionContext) {
             if (this.terminal === undefined) {
                 this.terminal = vscode.window.createTerminal(
-                    "VSCode Component Editor",
+                    "VSCode unit Editor",
                 );
             }
             this.terminal.show();
@@ -120,7 +120,7 @@ export namespace ModelStateMachine {
 
                             }
 
-                            this.componentViewTreeView.buildTreeData(this.modelHandler);
+                            this.unitViewTreeView.buildTreeData(this.modelHandler);
 
                             this.state = State.initOver;
                         }

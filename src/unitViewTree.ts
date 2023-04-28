@@ -2,7 +2,7 @@ import { type } from 'os';
 import * as vscode from 'vscode';
 import { ModelHandler } from './modelHandler';
 
-export namespace ComponentViewTree {
+export namespace unitViewTree {
 
     /**
      * The type of the tree item
@@ -12,7 +12,7 @@ export namespace ComponentViewTree {
      */
     export enum Type {
         nothing,    // Used for undefined
-        component,  // A component
+        unit,  // A unit
         testSuite,  // A test suite
         testCase    // A test case
     }
@@ -31,7 +31,7 @@ export namespace ComponentViewTree {
     export type ViewTreeListener = (item: ViewTreeItem, type: ChangeType, thisArg?: any) => void;
 
     /**
-     * A tree item for the component editor
+     * A tree item for the unit editor
      *
      * @export
      * @class ViewTreeItem
@@ -45,9 +45,9 @@ export namespace ComponentViewTree {
         constructor(label: string, type: Type, children?: ViewTreeItem[]) {
             super(label, vscode.TreeItemCollapsibleState.None);
             this.type = type;
-            if (type === Type.component) {
-                this.contextValue = 'component';
-                this.iconPath = vscode.Uri.file(vscode.extensions.getExtension('gerioldman.embedded-unit-testing-extension')?.extensionPath + '/resources/component.svg');
+            if (type === Type.unit) {
+                this.contextValue = 'unit';
+                this.iconPath = vscode.Uri.file(vscode.extensions.getExtension('gerioldman.embedded-unit-testing-extension')?.extensionPath + '/resources/unit.svg');
             }
             else if (type === Type.testSuite) {
                 this.contextValue = 'testSuite';
@@ -96,19 +96,19 @@ export namespace ComponentViewTree {
     }
 
     /**
-     * The tree view for the component editor
+     * The tree view for the unit editor
      *
      * @export
-     * @class ComponentView
+     * @class unitView
      * @implements {vscode.TreeDataProvider<ViewTreeItem>}
      */
-    export class ComponentView implements vscode.TreeDataProvider<ViewTreeItem>
+    export class unitView implements vscode.TreeDataProvider<ViewTreeItem>
     {
         /**
          * The tree data
          *
          * @type {ViewTreeItem[]}
-         * @memberof ComponentView
+         * @memberof unitView
          */
         public treeData: ViewTreeItem[] = [];
 
@@ -117,7 +117,7 @@ export namespace ComponentViewTree {
          *
          * @private
          * @type {(vscode.EventEmitter<ViewTreeItem | undefined>)}
-         * @memberof ComponentView
+         * @memberof unitView
          */
         private _onDidChangeTreeData: vscode.EventEmitter<ViewTreeItem | undefined> = new vscode.EventEmitter<ViewTreeItem | undefined>();
 
@@ -125,15 +125,15 @@ export namespace ComponentViewTree {
          * Event that is fired when the tree data changes
          *
          * @type {(vscode.Event<ViewTreeItem | undefined>)}
-         * @memberof ComponentView
+         * @memberof unitView
          */
         onDidChangeTreeData?: vscode.Event<ViewTreeItem | undefined> = this._onDidChangeTreeData.event;
 
         public model: ModelHandler.Model | undefined = undefined;
 
         /**
-         * Creates an instance of ComponentView.
-         * @memberof ComponentView
+         * Creates an instance of unitView.
+         * @memberof unitView
          */
         constructor(model: ModelHandler.Model) {
             this.model = model;
@@ -143,48 +143,48 @@ export namespace ComponentViewTree {
          * Refresh the tree data
          *
          * @param {ModelHandler.Model} model
-         * @memberof ComponentView
+         * @memberof unitView
          */
         public buildTreeData(model: ModelHandler.Model) {
             this.treeData = [];
-            model.components?.forEach(component => {
-                const componentItem = new ViewTreeItem(component.name, Type.component);
-                component.testSuites?.forEach(testSuite => {
+            model.units?.forEach(unit => {
+                const unitItem = new ViewTreeItem(unit.name, Type.unit);
+                unit.testSuites?.forEach(testSuite => {
                     const testSuiteItem = new ViewTreeItem(testSuite.name, Type.testSuite);
                     testSuite.testCases?.forEach(testCase => {
                         const testCaseItem = new ViewTreeItem(testCase.name, Type.testCase);
                         testSuiteItem.addChild(testCaseItem);
                     });
-                    componentItem.addChild(testSuiteItem);
+                    unitItem.addChild(testSuiteItem);
                 });
-                this.treeData.push(componentItem);
+                this.treeData.push(unitItem);
             });
 
             this._onDidChangeTreeData.fire(undefined);
         }
 
         /**
-         * Creates a new component, and adds it to the tree data
+         * Creates a new unit, and adds it to the tree data
          *
-         * @memberof ComponentView
+         * @memberof unitView
          */
-        createComponent(context: vscode.ExtensionContext) {
+        createunit(context: vscode.ExtensionContext) {
             vscode.window.showInputBox(
                 {
-                    prompt: 'Enter the name of the component',
-                    placeHolder: 'Component name',
+                    prompt: 'Enter the name of the unit',
+                    placeHolder: 'unit name',
                     validateInput: (value: string) => {
                         // Check if the name is empty
                         if (value.length === 0) {
-                            return 'The name of the component cannot be empty';
+                            return 'The name of the unit cannot be empty';
                         }
                         // Check if the name already exists
                         if (this.treeData.find(item => item.label === value)) {
-                            return 'The name of the component already exists';
+                            return 'The name of the unit already exists';
                         }
                         // Check if the name contains only letters, numbers and underscores
                         if (!value.match(/^[a-zA-Z0-9_]+$/)) {
-                            return 'The name of the component can only contain letters, numbers and underscores';
+                            return 'The name of the unit can only contain letters, numbers and underscores';
                         }
                         return null;
                     }
@@ -192,23 +192,23 @@ export namespace ComponentViewTree {
             )
                 .then((name) => {
                     if (name) {
-                        this.addComponent(context,new ViewTreeItem(name, Type.component));
+                        this.addunit(context,new ViewTreeItem(name, Type.unit));
                     }
                 });
         }
 
         /**
-         * Deletes a component from the tree data
+         * Deletes a unit from the tree data
          *
-         * @param {ViewTreeItem} component
-         * @memberof ComponentView
+         * @param {ViewTreeItem} unit
+         * @memberof unitView
          */
-        deleteComponent(component: ViewTreeItem) {
-            vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Are you sure you want to delete this component?' })
+        deleteunit(unit: ViewTreeItem) {
+            vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Are you sure you want to delete this unit?' })
                 .then((value) => {
                     if (value === 'Yes') {
-                        this.treeData = this.treeData.filter(item => item !== component);
-                        this.model?.viewTreeListener(component, ChangeType.delete);
+                        this.treeData = this.treeData.filter(item => item !== unit);
+                        this.model?.viewTreeListener(unit, ChangeType.delete);
                         this._onDidChangeTreeData.fire(undefined);
                     }
                 });
@@ -218,7 +218,7 @@ export namespace ComponentViewTree {
          * Creates a new TestSuite, and adds it to the tree data
          *
          * @param {ViewTreeItem} element
-         * @memberof ComponentView
+         * @memberof unitView
          */
         createTestSuite(element: ViewTreeItem) {
             vscode.window.showInputBox(
@@ -258,7 +258,7 @@ export namespace ComponentViewTree {
          * Deletes a TestSuite from the tree data
          *
          * @param {ViewTreeItem} element
-         * @memberof ComponentView
+         * @memberof unitView
          */
         deleteTestSuite(element: ViewTreeItem) {
             vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Are you sure you want to delete this TestSuite with all test cases?' })
@@ -275,7 +275,7 @@ export namespace ComponentViewTree {
          * Creates a new TestCase, and adds it to the tree data
          *
          * @param {ViewTreeItem} element
-         * @memberof ComponentView
+         * @memberof unitView
          */
         createTestCase(element: ViewTreeItem) {
             vscode.window.showInputBox(
@@ -314,7 +314,7 @@ export namespace ComponentViewTree {
          * Deletes a TestCase from the tree data
          *
          * @param {ViewTreeItem} element
-         * @memberof ComponentView
+         * @memberof unitView
          */
         deleteTestCase(element: ViewTreeItem) {
             vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Are you sure you want to delete this TestCase?' })
@@ -331,7 +331,7 @@ export namespace ComponentViewTree {
          *
          * @param {ViewTreeItem} element
          * @return {*}  {(vscode.TreeItem | Thenable<vscode.TreeItem>)}
-         * @memberof ComponentView
+         * @memberof unitView
          */
         getTreeItem(element: ViewTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
             return element;
@@ -342,7 +342,7 @@ export namespace ComponentViewTree {
          *
          * @param {(ViewTreeItem | undefined)} element
          * @return {*}  {vscode.ProviderResult<ViewTreeItem[]>}
-         * @memberof ComponentView
+         * @memberof unitView
          */
         getChildren(element: ViewTreeItem | undefined): vscode.ProviderResult<ViewTreeItem[]> {
             if (element) {
@@ -353,20 +353,20 @@ export namespace ComponentViewTree {
         }
 
         /**
-         * Add component to the view tree
+         * Add unit to the view tree
          *
-         * @param {ViewTreeItem} component
-         * @memberof ComponentView
+         * @param {ViewTreeItem} unit
+         * @memberof unitView
          */
-        addComponent(context: vscode.ExtensionContext,component: ViewTreeItem) {
-            if (component.type === Type.component) {
-                component.iconPath = vscode.Uri.joinPath(context.extensionUri, "resources/component.svg");
-                this.treeData.push(component);
-                this.model?.viewTreeListener(component, ChangeType.create);
+        addunit(context: vscode.ExtensionContext,unit: ViewTreeItem) {
+            if (unit.type === Type.unit) {
+                unit.iconPath = vscode.Uri.joinPath(context.extensionUri, "resources/unit.svg");
+                this.treeData.push(unit);
+                this.model?.viewTreeListener(unit, ChangeType.create);
                 this._onDidChangeTreeData.fire(undefined);
             }
             else {
-                throw new Error('The type of the item is not a component');
+                throw new Error('The type of the item is not a unit');
             }
         }
 
@@ -374,11 +374,11 @@ export namespace ComponentViewTree {
          * Add a test suite to the view tree
          *
          * @param {ViewTreeItem} testSuite
-         * @memberof ComponentView
+         * @memberof unitView
          */
-        addTestSuite(component: ViewTreeItem, testSuite: ViewTreeItem) {
-            if (testSuite.type === Type.testSuite && component.type === Type.component) {
-                component.addChild(testSuite);
+        addTestSuite(unit: ViewTreeItem, testSuite: ViewTreeItem) {
+            if (testSuite.type === Type.testSuite && unit.type === Type.unit) {
+                unit.addChild(testSuite);
                 this.model?.viewTreeListener(testSuite, ChangeType.create);
                 this._onDidChangeTreeData.fire(undefined);
             }
@@ -391,11 +391,11 @@ export namespace ComponentViewTree {
          * Add a test case to the view tree
          *
          * @param {ViewTreeItem} testCase
-         * @memberof ComponentView
+         * @memberof unitView
          */
-        addTestCase(component: ViewTreeItem, testCase: ViewTreeItem) {
-            if (testCase.type === Type.testCase && component.type === Type.testSuite) {
-                component.addChild(testCase);
+        addTestCase(unit: ViewTreeItem, testCase: ViewTreeItem) {
+            if (testCase.type === Type.testCase && unit.type === Type.testSuite) {
+                unit.addChild(testCase);
                 this.model?.viewTreeListener(testCase, ChangeType.create);
                 this._onDidChangeTreeData.fire(undefined);
             }

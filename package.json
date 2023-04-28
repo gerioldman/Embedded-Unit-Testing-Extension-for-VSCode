@@ -19,107 +19,107 @@
     "menus": {
       "view/title": [
         {
-          "command": "component_editor.createComponent",
-          "when": "view == component_editor",
+          "command": "unit_editor.createunit",
+          "when": "view == unit_editor",
           "group": "navigation"
         },
         {
-          "command": "component_editor.generateProject",
-          "when": "view == component_editor",
+          "command": "unit_editor.generateProject",
+          "when": "view == unit_editor",
           "group": "navigation"
         },
         {
-          "command": "component_editor.configureProject",
-          "when": "view == component_editor",
+          "command": "unit_editor.configureProject",
+          "when": "view == unit_editor",
           "group": "navigation"
         },
         {
-          "command": "component_editor.compileProject",
-          "when": "view == component_editor",
+          "command": "unit_editor.compileProject",
+          "when": "view == unit_editor",
           "group": "navigation"
         },
         {
-          "command": "component_editor.flashProject",
-          "when": "view == component_editor",
+          "command": "unit_editor.flashProject",
+          "when": "view == unit_editor",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "component_editor.deleteComponent",
-          "when": "view == component_editor && viewItem == component",
+          "command": "unit_editor.deleteunit",
+          "when": "view == unit_editor && viewItem == unit",
           "group": "inline"
         },
         {
-          "command": "component_editor.createTestSuite",
-          "when": "view == component_editor && viewItem == component",
+          "command": "unit_editor.createTestSuite",
+          "when": "view == unit_editor && viewItem == unit",
           "group": "inline"
         },
         {
-          "command": "component_editor.deleteTestSuite",
-          "when": "view == component_editor && viewItem == testSuite",
+          "command": "unit_editor.deleteTestSuite",
+          "when": "view == unit_editor && viewItem == testSuite",
           "group": "inline"
         },
         {
-          "command": "component_editor.createTestCase",
-          "when": "view == component_editor && viewItem == testSuite",
+          "command": "unit_editor.createTestCase",
+          "when": "view == unit_editor && viewItem == testSuite",
           "group": "inline"
         },
         {
-          "command": "component_editor.deleteTestCase",
-          "when": "view == component_editor && viewItem == testCase",
+          "command": "unit_editor.deleteTestCase",
+          "when": "view == unit_editor && viewItem == testCase",
           "group": "inline"
         }
       ]
     },
     "commands": [
       {
-        "command": "component_editor.generateProject",
+        "command": "unit_editor.generateProject",
         "title": "Generate Project",
         "icon": "$(play)"
       },
       {
-        "command": "component_editor.createComponent",
-        "title": "Create Component",
+        "command": "unit_editor.createunit",
+        "title": "Create unit",
         "icon": "$(add)"
       },
       {
-        "command": "component_editor.deleteComponent",
-        "title": "Delete Component",
+        "command": "unit_editor.deleteunit",
+        "title": "Delete unit",
         "icon": "$(trash)"
       },
       {
-        "command": "component_editor.createTestSuite",
+        "command": "unit_editor.createTestSuite",
         "title": "Create TestSuite",
         "icon": "$(add)"
       },
       {
-        "command": "component_editor.deleteTestSuite",
+        "command": "unit_editor.deleteTestSuite",
         "title": "Delete TestSuite",
         "icon": "$(trash)"
       },
       {
-        "command": "component_editor.createTestCase",
+        "command": "unit_editor.createTestCase",
         "title": "Create TestCase",
         "icon": "$(add)"
       },
       {
-        "command": "component_editor.deleteTestCase",
+        "command": "unit_editor.deleteTestCase",
         "title": "Delete TestCase",
         "icon": "$(trash)"
       },
       {
-        "command": "component_editor.configureProject",
+        "command": "unit_editor.configureProject",
         "title": "Configure Project",
         "icon": "$(gear)"
       },
       {
-        "command": "component_editor.compileProject",
+        "command": "unit_editor.compileProject",
         "title": "Compile Project",
         "icon": "$(run-all)"
       },
       {
-        "command": "component_editor.flashProject",
+        "command": "unit_editor.flashProject",
         "title": "Flash Project",
         "icon": "$(plug)"
       }
@@ -129,7 +129,7 @@
         {
           "id": "unitbasedprojectexplorer",
           "title": "Unit-based Project Explorer",
-          "icon": "resources/component.svg"
+          "icon": "resources/unit.svg"
         }
       ]
     },
@@ -137,8 +137,8 @@
     {
       "unitbasedprojectexplorer": [
         {
-          "id": "component_editor",
-          "name": "Component Editor"
+          "id": "unit_editor",
+          "name": "unit Editor"
         }
       ]
     }

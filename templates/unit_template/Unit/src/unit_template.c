@@ -1,12 +1,12 @@
 /**
- * @file @@COMPONENT_NAME@@.c
+ * @file @@unit_NAME@@.c
  * @brief TODO - Add description
  * @date @@DATE@@
 */
 
 /* Generated includes - Do not modify ----------------------------------------*/
 
-#include "@@COMPONENT_NAME@@.h"
+#include "@@unit_NAME@@.h"
 
 /* Private includes ----------------------------------------------------------*/
 

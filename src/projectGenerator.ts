@@ -15,11 +15,11 @@ export namespace ProjectGenerator {
             }
             catch (e: any) {
                 if (e.code === "EntryExists") {
-                    this.logWarning("Component folder already exists, not overwriting it!");
+                    this.logWarning("unit folder already exists, not overwriting it!");
                 }
                 else {
-                    this.logError("Error creating component folder: " + e);
-                    throw new Error("Error creating component folder: " + e);
+                    this.logError("Error creating unit folder: " + e);
+                    throw new Error("Error creating unit folder: " + e);
                 }
             }
         }
@@ -136,12 +136,12 @@ export namespace ProjectGenerator {
                     await this.createFoldersAndCopyContents(context);
                     await this.copyFiles(context);
 
-                    // create components from model
-                    progress.report({ message: 'Creating components', increment: 25 });
-                    await this.createComponents(context);
+                    // create units from model
+                    progress.report({ message: 'Creating units', increment: 25 });
+                    await this.createunits(context);
 
-                    // create meson.build file for components
-                    progress.report({ message: 'Creating component database meson.build file', increment: 25 });
+                    // create meson.build file for units
+                    progress.report({ message: 'Creating unit database meson.build file', increment: 25 });
                     await this.createDataBaseMesonFile();
 
                     progress.report({ message: 'Finished generating project', increment: 25 });
@@ -150,92 +150,92 @@ export namespace ProjectGenerator {
             );
         }
 
-        async createComponents(context: vscode.ExtensionContext) {
-            this.logInfo("Starting to create components");
+        async createunits(context: vscode.ExtensionContext) {
+            this.logInfo("Starting to create units");
             if (this.model === undefined) {
                 this.logError("Model is undefined! Probably a developer error!");
                 throw new Error("Model is undefined!");
             }
 
-            // check if component folder exists
+            // check if unit folder exists
             let extensionUri = context.extensionUri;
             let templateFolderUri = vscode.Uri.joinPath(extensionUri!, "templates", "unit_template");
 
-            for (let component of this.model.components) {
-                // create folder for component
-                let componentFolderUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, "components", component.name);
-                this.tryCreateFolder(componentFolderUri);
+            for (let unit of this.model.units) {
+                // create folder for unit
+                let unitFolderUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, "units", unit.name);
+                this.tryCreateFolder(unitFolderUri);
 
-                // create folder for component implementation files
-                let componentImplFolderUri = vscode.Uri.joinPath(componentFolderUri, "Unit");
-                this.tryCreateFolder(componentImplFolderUri);
+                // create folder for unit implementation files
+                let unitImplFolderUri = vscode.Uri.joinPath(unitFolderUri, "Unit");
+                this.tryCreateFolder(unitImplFolderUri);
 
-                // create folder for component header files
-                let componentHeaderFileUri = vscode.Uri.joinPath(componentImplFolderUri, "include");
-                this.tryCreateFolder(componentHeaderFileUri);
+                // create folder for unit header files
+                let unitHeaderFileUri = vscode.Uri.joinPath(unitImplFolderUri, "include");
+                this.tryCreateFolder(unitHeaderFileUri);
 
-                // create folder for component source files
-                let componentSourceFileUri = vscode.Uri.joinPath(componentImplFolderUri, "src");
-                this.tryCreateFolder(componentSourceFileUri);
+                // create folder for unit source files
+                let unitSourceFileUri = vscode.Uri.joinPath(unitImplFolderUri, "src");
+                this.tryCreateFolder(unitSourceFileUri);
 
-                // create folder for component test implementation files
-                let componentTestFileUri = vscode.Uri.joinPath(componentFolderUri, "UnitTest");
-                this.tryCreateFolder(componentTestFileUri);
+                // create folder for unit test implementation files
+                let unitTestFileUri = vscode.Uri.joinPath(unitFolderUri, "UnitTest");
+                this.tryCreateFolder(unitTestFileUri);
 
-                // create folder for component test source files
-                let componentTestSourceFileUri = vscode.Uri.joinPath(componentTestFileUri, "src");
-                this.tryCreateFolder(componentTestSourceFileUri);
+                // create folder for unit test source files
+                let unitTestSourceFileUri = vscode.Uri.joinPath(unitTestFileUri, "src");
+                this.tryCreateFolder(unitTestSourceFileUri);
 
-                // create folder for component test header files
-                let componentTestHeaderFileUri = vscode.Uri.joinPath(componentTestFileUri, "include");
-                this.tryCreateFolder(componentTestHeaderFileUri);
+                // create folder for unit test header files
+                let unitTestHeaderFileUri = vscode.Uri.joinPath(unitTestFileUri, "include");
+                this.tryCreateFolder(unitTestHeaderFileUri);
 
-                // copy files from template to component folder with correct names
+                // copy files from template to unit folder with correct names
                 let replaceMap: Array<[RegExp, string]> = [
-                    [new RegExp("@@COMPONENT_NAME@@", 'g'), component.name],
-                    [new RegExp("@@COMPONENT_NAME_UPPERCASE@@", 'g'), component.name.toUpperCase()],
-                    [new RegExp("@@COMPONENT_NAME_LOWERCASE@@", 'g'), component.name.toLowerCase()],
-                    [new RegExp("@@COMPONENT_TESTSUITE_SOURCE_FILES@@", 'g'), component.testSuites.map(testSuite => "\'UnitTest/src/" + testSuite.name + ".c\'").join(",\n        ")],
-                    [new RegExp("@@TEST_SUITES@@", 'g'), component.testSuites.map(testSuite => "&" + testSuite.name).join(",\n\t") + ','],
-                    [new RegExp("@@EXTERN_TEST_SUITES@@", 'g'), component.testSuites.map(testSuite => "extern TestSuite " + testSuite.name + ";\n").join("")],
+                    [new RegExp("@@unit_NAME@@", 'g'), unit.name],
+                    [new RegExp("@@unit_NAME_UPPERCASE@@", 'g'), unit.name.toUpperCase()],
+                    [new RegExp("@@unit_NAME_LOWERCASE@@", 'g'), unit.name.toLowerCase()],
+                    [new RegExp("@@unit_TESTSUITE_SOURCE_FILES@@", 'g'), unit.testSuites.map(testSuite => "\'UnitTest/src/" + testSuite.name + ".c\'").join(",\n        ")],
+                    [new RegExp("@@TEST_SUITES@@", 'g'), unit.testSuites.map(testSuite => "&" + testSuite.name).join(",\n\t") + ','],
+                    [new RegExp("@@EXTERN_TEST_SUITES@@", 'g'), unit.testSuites.map(testSuite => "extern TestSuite " + testSuite.name + ";\n").join("")],
                     [new RegExp("@@DATE@@", 'g'), new Date().toLocaleDateString()]
                 ];
 
-                // copy files from template to component folder
+                // copy files from template to unit folder
                 let templateUri = vscode.Uri.joinPath(templateFolderUri, "Unit", "include", "unit_template.h");
-                let targetUri = vscode.Uri.joinPath(componentHeaderFileUri, component.name + ".h");
+                let targetUri = vscode.Uri.joinPath(unitHeaderFileUri, unit.name + ".h");
                 await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "Unit", "src", "unit_template.c");
-                targetUri = vscode.Uri.joinPath(componentSourceFileUri, component.name + ".c");
+                targetUri = vscode.Uri.joinPath(unitSourceFileUri, unit.name + ".c");
                 await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "include", "userstub.h");
-                targetUri = vscode.Uri.joinPath(componentTestHeaderFileUri, "userstub.h");
+                targetUri = vscode.Uri.joinPath(unitTestHeaderFileUri, "userstub.h");
                 await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "src", "userstub.c");
-                targetUri = vscode.Uri.joinPath(componentTestSourceFileUri, "userstub.c");
+                targetUri = vscode.Uri.joinPath(unitTestSourceFileUri, "userstub.c");
                 await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, []);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "src", "TestSuites.c");
-                targetUri = vscode.Uri.joinPath(componentTestSourceFileUri, "TestSuites.c");
+                targetUri = vscode.Uri.joinPath(unitTestSourceFileUri, "TestSuites.c");
                 await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, [
-                    [/(?:extern\s*TestSuite\s*[A-Za-z0-9_]+\s*;\s*)+/, component.testSuites.map(testSuite => "extern TestSuite " + testSuite.name + ";\n").join("") + "\n"],
-                    [/TestSuite\*\s*testSuites\s*\[\]\s*=\s*{\s*(?:\s*&[A-Za-z0-9_]+\s*,\s*)+\s*TEST_SUITE_END\s*}\s*;/, 'TestSuite* testSuites[] = {\n\t' + component.testSuites.map(testSuite => "&" + testSuite.name).join(",\n\t") + ',\n\tTEST_SUITE_END\n};']
+                    [/(?:extern\s*TestSuite\s*[A-Za-z0-9_]+\s*;\s*)+/, unit.testSuites.map(testSuite => "extern TestSuite " + testSuite.name + ";\n").join("") + "\n"],
+                    [/TestSuite\*\s*testSuites\s*\[\]\s*=\s*{\s*(?:\s*&[A-Za-z0-9_]+\s*,\s*)+\s*TEST_SUITE_END\s*}\s*;/, 'TestSuite* testSuites[] = {\n\t' + unit.testSuites.map(testSuite => "&" + testSuite.name).join(",\n\t") + ',\n\tTEST_SUITE_END\n};']
                 ]);
 
                 templateUri = vscode.Uri.joinPath(templateFolderUri, "meson.build");
-                targetUri = vscode.Uri.joinPath(componentFolderUri, "meson.build");
+                targetUri = vscode.Uri.joinPath(unitFolderUri, "meson.build");
                 await this.copyFromTemplateAndReplace(templateUri, targetUri, replaceMap, [
                     [
-                        /component_test_files\s*=\s*files\s*\(\s*\[\s*(?:\'UnitTest\/src\/\w+\.c\'\s*,?\s*)+\]\s*\)/,
-                        "component_test_files = files([\n\t\'UnitTest/src/TestSuites.c\',\n\t\'UnitTest/src/userstub.c\',\n\t" + component.testSuites.map(testSuite => "\'UnitTest/src/" + testSuite.name + ".c\'").join(",\n\t") + "\n])"
+                        /unit_test_files\s*=\s*files\s*\(\s*\[\s*(?:\'UnitTest\/src\/\w+\.c\'\s*,?\s*)+\]\s*\)/,
+                        "unit_test_files = files([\n\t\'UnitTest/src/TestSuites.c\',\n\t\'UnitTest/src/userstub.c\',\n\t" + unit.testSuites.map(testSuite => "\'UnitTest/src/" + testSuite.name + ".c\'").join(",\n\t") + "\n])"
                     ]
                 ]);
 
                 // create test suites
-                for (let testSuite of component.testSuites) {
+                for (let testSuite of unit.testSuites) {
                     let replaceMapForSuite: [RegExp, string][] = [];
                     for (let replaceMapping of replaceMap) {
                         replaceMapForSuite.push(replaceMapping);
@@ -245,7 +245,7 @@ export namespace ProjectGenerator {
                     replaceMapForSuite.push([new RegExp('@@TEST_CASE_ENTRIES@@', 'g'), testSuite.testCases.map(testCase => "TEST_CASE_ENTRY(" + testCase.name + ")").join(",\n\t\t") + ","]);
 
                     templateUri = vscode.Uri.joinPath(templateFolderUri, "UnitTest", "src", "TStemplate.c");
-                    targetUri = vscode.Uri.joinPath(componentTestSourceFileUri, testSuite.name + ".c");
+                    targetUri = vscode.Uri.joinPath(unitTestSourceFileUri, testSuite.name + ".c");
                     try {
                         let content = await vscode.workspace.fs.readFile(targetUri);
 
@@ -284,24 +284,24 @@ export namespace ProjectGenerator {
 
             }
 
-            this.logInfo("Finished creating components");
+            this.logInfo("Finished creating units");
         }
 
         async createDataBaseMesonFile() {
             this.logInfo("Creating meson.build file for database");
-            let destinationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, "components", "meson.build");
+            let destinationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, "units", "meson.build");
 
             if (this.model === undefined) {
                 throw new Error("Model is undefined");
             }
             let output: string = "";
             output += "# GENERATED CODE - DO NOT MODIFY BY HAND\n\n";
-            for (let component of this.model.components) {
-                output += "components_include += include_directories(\'" + component.name + "/Unit/include\')\n";
+            for (let unit of this.model.units) {
+                output += "units_include += include_directories(\'" + unit.name + "/Unit/include\')\n";
             }
             output += "\n";
-            for (let component of this.model.components) {
-                output += "subdir(\'" + component.name + "\')\n";
+            for (let unit of this.model.units) {
+                output += "subdir(\'" + unit.name + "\')\n";
             }
             output += "\n";
             output += "# END GENERATED CODE";
@@ -447,14 +447,14 @@ export namespace ProjectGenerator {
                 // get folders from project template folder and create them in workspace folder
                 let projectTemplateFolderUri = vscode.Uri.joinPath(extensionUri, "templates", "project_template");
                 let results = await vscode.workspace.fs.readDirectory(projectTemplateFolderUri);
-
+                this.logInfo(results.toString());
                 if (
                     !(
-                        results.find(
-                            (element) => {
-                                return element[0] === "components" && element[1] === vscode.FileType.Directory;
-                            }) !== undefined
-                        &&
+                        //results.find(
+                        //    (element) => {
+                        //        return element[0] === "units" && element[1] === vscode.FileType.Directory;
+                        //    }) !== undefined
+                        //&&
                         results.find(
                             (element) => {
                                 return element[0] === "integration" && element[1] === vscode.FileType.Directory;
@@ -477,7 +477,7 @@ export namespace ProjectGenerator {
                 for (let element of results) {
                     if (element[1] === vscode.FileType.Directory) {
                         switch (element[0]) {
-                            case "components": {
+                            case "units": {
                                 let folderToCreate = vscode.Uri.joinPath(folderUri, element[0]);
                                 try {
                                     let result = await vscode.workspace.fs.stat(folderToCreate);

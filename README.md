@@ -12,13 +12,13 @@ The extension will also generate a Meson project skeleton, which can be used to 
 ```
 project_root
 ├── builddir
-├── components
-│   ├── componentA
+├── units
+│   ├── unitA
 │   │   ├── Unit
 │   │   │   ├── include
-│   │   │   │   └── componentA.h
+│   │   │   │   └── unitA.h
 │   │   │   └── src
-│   │   │       └── componentA.c
+│   │   │       └── unitA.c
 │   │   └── Unittest
 │   │       ├── include
 │   │       │   └── userstub.h
@@ -26,12 +26,12 @@ project_root
 │   │           ├── userstub.c
 │   │           ├── TestSuites.c
 │   │           └── TestSuite1.c
-│   └── componentB
+│   └── unitB
 │       ├── Unit
 │       │   ├── include
-│       │   │   └── componentB.h
+│       │   │   └── unitB.h
 │       │   └── src
-│       │       └── componentB.c
+│       │       └── unitB.c
 │       └── Unittest
 │           ├── include
 │           │   └── userstub.h
@@ -71,3 +71,10 @@ Currently there are no known issues.
 
 Initial release of Embedded Unit Testing
 
+### 0.0.2
+
+Try at fix of the extension not working outside debug
+
+### 0.0.3
+
+Fix of the extension not working outside debug

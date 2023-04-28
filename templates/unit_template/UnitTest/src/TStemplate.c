@@ -9,7 +9,7 @@
 #include "TestSuites.h"
 #include "UnitTestAssert.h"
 /* It is normal for this to be not available right after project generation, this is created during the compilation process */
-#include "@@COMPONENT_NAME@@.c_mock.h" 
+#include "@@unit_NAME@@.c_mock.h" 
 
 /* Private includes ----------------------------------------------------------*/
 

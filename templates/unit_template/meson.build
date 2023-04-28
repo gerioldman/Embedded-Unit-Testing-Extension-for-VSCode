@@ -1,20 +1,20 @@
 # GENERATED CODE - DO NOT MODIFY BY HAND
 
-components_source += files('Unit/src/@@COMPONENT_NAME@@.c')
+units_source += files('Unit/src/@@unit_NAME@@.c')
 
-component_test_files = files([
+unit_test_files = files([
         'UnitTest/src/TestSuites.c',
         'UnitTest/src/userstub.c',
-        @@COMPONENT_TESTSUITE_SOURCE_FILES@@
+        @@unit_TESTSUITE_SOURCE_FILES@@
 ])
 
 cc = meson.get_compiler('c', native: true)
 
 preprocessed_file = cc.preprocess(
-        'Unit/src/@@COMPONENT_NAME@@.c',
+        'Unit/src/@@unit_NAME@@.c',
         include_directories: [
                 stub_include,
-                components_include,
+                units_include,
                 platform_include,
                 integration_include,
                 unittest_include,
@@ -37,7 +37,7 @@ mock_generator = generator(
                 '@OUTPUT0@',
                 '@OUTPUT1@',
                 '@OUTPUT2@',
-                '@0@/@1@'.format(meson.current_source_dir(),'Unit/src/@@COMPONENT_NAME@@.c'),
+                '@0@/@1@'.format(meson.current_source_dir(),'Unit/src/@@unit_NAME@@.c'),
 
         ]
 )
@@ -47,15 +47,15 @@ mocks = mock_generator.process(
 )
 
 test(
-        '@@COMPONENT_NAME@@_test', 
+        '@@unit_NAME@@_test', 
         executable(
-                '@@COMPONENT_NAME@@_test', 
-                'Unit/src/@@COMPONENT_NAME@@.c',
+                '@@unit_NAME@@_test', 
+                'Unit/src/@@unit_NAME@@.c',
                 unittest_source,
-                component_test_files,
+                unit_test_files,
                 mocks,
                 include_directories: [
-                        components_include,
+                        units_include,
                         platform_include,
                         integration_include,
                         unittest_include,
@@ -70,22 +70,22 @@ test(
 if get_option('target_tests') == true
 
 test(
-        '@@COMPONENT_NAME@@_target_test',
+        '@@unit_NAME@@_target_test',
         python, 
         args: 
                 [
                         test_runner,
                         executable(
-                                '@@COMPONENT_NAME@@_target_test',
-                                'Unit/src/@@COMPONENT_NAME@@.c',
-                                component_test_files,
+                                '@@unit_NAME@@_target_test',
+                                'Unit/src/@@unit_NAME@@.c',
+                                unit_test_files,
                                 mocks,
                                 unittest_source,
                                 unittest_platform_source,
                                 platform_source_bareMinimum,
                                 name_suffix: 'elf',
                                 include_directories: [
-                                        components_include,
+                                        units_include,
                                         platform_include,
                                         integration_include,
                                         unittest_include,
