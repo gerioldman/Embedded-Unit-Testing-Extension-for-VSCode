@@ -39,7 +39,7 @@ export namespace ModelStateMachine {
             }
         }
 
-        public async configureProject() {
+        public async configureProject(_context: vscode.ExtensionContext) {
             if (this.terminal === undefined) {
                 this.terminal = vscode.window.createTerminal(
                     "VSCode Component Editor",
@@ -49,7 +49,7 @@ export namespace ModelStateMachine {
             this.terminal.sendText("meson setup builddir --cross-file=integration/cross_compile.build");
         }
 
-        public async compileProject() {
+        public async compileProject(_context: vscode.ExtensionContext) {
             if (this.terminal === undefined) {
                 this.terminal = vscode.window.createTerminal(
                     "VSCode Component Editor",
@@ -59,7 +59,7 @@ export namespace ModelStateMachine {
             this.terminal.sendText("cd builddir;meson compile;cd ..");
         }
 
-        public async flashProject() {
+        public async flashProject(_context: vscode.ExtensionContext) {
             if (this.terminal === undefined) {
                 this.terminal = vscode.window.createTerminal(
                     "VSCode Component Editor",

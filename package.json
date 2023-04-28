@@ -2,8 +2,8 @@
   "name": "embedded-unit-testing-extension",
   "publisher": "gerioldman",
   "displayName": "Embedded Unit Testing Extension",
-  "description": "Embedded Unit Testing Extension for VS Code. Based on the C language and Meson build system.",
-  "version": "0.0.2",
+  "description": "Embedded Unit Testing Extension for VS Code. Based on the C language and Meson build system, with a bit of help from Python.",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.75.0"
   },

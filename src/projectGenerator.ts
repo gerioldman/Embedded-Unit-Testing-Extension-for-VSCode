@@ -119,7 +119,7 @@ export namespace ProjectGenerator {
             );
         }
 
-        public async generateProject() {
+        public async generateProject(context: vscode.ExtensionContext) {
 
             vscode.window.withProgress(
                 {
@@ -133,12 +133,12 @@ export namespace ProjectGenerator {
 
                     // copy file from template to workspace
                     progress.report({ message: 'Copying files', increment: 25 });
-                    await this.createFoldersAndCopyContents();
-                    await this.copyFiles();
+                    await this.createFoldersAndCopyContents(context);
+                    await this.copyFiles(context);
 
                     // create components from model
                     progress.report({ message: 'Creating components', increment: 25 });
-                    await this.createComponents();
+                    await this.createComponents(context);
 
                     // create meson.build file for components
                     progress.report({ message: 'Creating component database meson.build file', increment: 25 });
@@ -150,7 +150,7 @@ export namespace ProjectGenerator {
             );
         }
 
-        async createComponents() {
+        async createComponents(context: vscode.ExtensionContext) {
             this.logInfo("Starting to create components");
             if (this.model === undefined) {
                 this.logError("Model is undefined! Probably a developer error!");
@@ -158,7 +158,7 @@ export namespace ProjectGenerator {
             }
 
             // check if component folder exists
-            let extensionUri = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionUri;
+            let extensionUri = context.extensionUri;
             let templateFolderUri = vscode.Uri.joinPath(extensionUri!, "templates", "unit_template");
 
             for (let component of this.model.components) {
@@ -316,9 +316,9 @@ export namespace ProjectGenerator {
             }
         }
 
-        async copyFiles() {
+        async copyFiles(context: vscode.ExtensionContext) {
             this.logInfo("Starting to copy files");
-            let extensionUri = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionUri;
+            let extensionUri = context.extensionUri;
             let projectTemplateFolderUri = vscode.Uri.joinPath(extensionUri!, "templates", "project_template");
             let workspaceFolderUri = vscode.workspace.workspaceFolders![0].uri;
 
@@ -436,11 +436,11 @@ export namespace ProjectGenerator {
 
         }
 
-        async createFoldersAndCopyContents() {
+        async createFoldersAndCopyContents(context: vscode.ExtensionContext) {
             this.logInfo("Starting to create folders");
 
             let folderUri = vscode.workspace.workspaceFolders![0].uri;
-            let extensionUri = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionUri;
+            let extensionUri = context.extensionUri;
 
             if (extensionUri !== undefined) {
 

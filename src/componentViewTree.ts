@@ -168,7 +168,7 @@ export namespace ComponentViewTree {
          *
          * @memberof ComponentView
          */
-        createComponent() {
+        createComponent(context: vscode.ExtensionContext) {
             vscode.window.showInputBox(
                 {
                     prompt: 'Enter the name of the component',
@@ -192,7 +192,7 @@ export namespace ComponentViewTree {
             )
                 .then((name) => {
                     if (name) {
-                        this.addComponent(new ViewTreeItem(name, Type.component));
+                        this.addComponent(context,new ViewTreeItem(name, Type.component));
                     }
                 });
         }
@@ -358,9 +358,9 @@ export namespace ComponentViewTree {
          * @param {ViewTreeItem} component
          * @memberof ComponentView
          */
-        addComponent(component: ViewTreeItem) {
+        addComponent(context: vscode.ExtensionContext,component: ViewTreeItem) {
             if (component.type === Type.component) {
-                component.iconPath = vscode.extensions.getExtension("gerioldman.embedded-unit-testing-extension")?.extensionPath + "/resources/component.svg";
+                component.iconPath = vscode.Uri.joinPath(context.extensionUri, "resources/component.svg");
                 this.treeData.push(component);
                 this.model?.viewTreeListener(component, ChangeType.create);
                 this._onDidChangeTreeData.fire(undefined);
