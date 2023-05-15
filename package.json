@@ -3,7 +3,7 @@
   "publisher": "gerioldman",
   "displayName": "Embedded Unit Testing Extension",
   "description": "Embedded Unit Testing Extension for VS Code. Based on the C language and Meson build system, with a bit of help from Python.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -40,6 +40,21 @@
         },
         {
           "command": "unit_editor.flashProject",
+          "when": "view == unit_editor",
+          "group": "navigation"
+        },
+        {
+          "command": "unit_editor.runTests",
+          "when": "view == unit_editor",
+          "group": "navigation"
+        },
+        {
+          "command": "unit_editor.runCoverage",
+          "when": "view == unit_editor",
+          "group": "navigation"
+        },
+        {
+          "command": "unit_editor.runStaticAnalysis",
           "when": "view == unit_editor",
           "group": "navigation"
         }
@@ -122,6 +137,21 @@
         "command": "unit_editor.flashProject",
         "title": "Flash Project",
         "icon": "$(plug)"
+      },
+      {
+        "command": "unit_editor.runTests",
+        "title": "Run Tests",
+        "icon": "$(run)"
+      },
+      {
+        "command": "unit_editor.runCoverage",
+        "title": "Run Coverage",
+        "icon": "$(run)"
+      },
+      {
+        "command": "unit_editor.runStaticAnalysis",
+        "title": "Run Static Analysis",
+        "icon": "$(run)"
       }
     ],
     "viewsContainers": {

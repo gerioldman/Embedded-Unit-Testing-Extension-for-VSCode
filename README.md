@@ -11,6 +11,7 @@ The extension is also aiming to provide automatic mocking, this is done by a Pyt
 The extension will also generate a Meson project skeleton, which can be used to compile the unit tests, and with some additional configuration, the whole software. The folder structure of the project skeleton is as follows:
 ```
 project_root
+├── .codechecker
 ├── builddir
 ├── units
 │   ├── unitA
@@ -49,13 +50,14 @@ project_root
 ├── UnitTestRunner
 ├── gcovr.cfg
 ├── meson.build
-└── meson_options.txt
+├── meson_options.txt
+└── codechecker.cfg
 ```
-It will contain a host target test, and a platform target test. The host target test will not run by default, you have to set up a way to read the results from the target, so this option can be disabled by meson_options.txt file. The whole software build can be disabled as well. The scripts folder contains three scripts, one for flashing the binary to the target, one for running the tests on the target by Segger RTT (I advise that you try to set this up), and one for creating the mocks. The UnitTestRunner folder contains the Unit test framework, which is my own implementation. The gcovr.cfg file is used for generating code coverage reports. The meson.build file is the main build file, and the meson_options.txt file is used to configure the build.
+The build system contains host and target tests for the units, and a platform target. The target tests will not run by default, you have to set up a way to read the results from the target, so this option can be disabled by meson_options.txt file. The whole software build can be disabled as well. The scripts folder contains three scripts, one for flashing the binary to the target, one for running the tests on the target by Segger RTT (I advise that you try to set this up), and one for creating the mocks. The UnitTestRunner folder contains the Unit test framework, which is my own implementation. The gcovr.cfg file is used for filtering generated code coverage reports. The meson.build file is the main build file, and the meson_options.txt file is used to configure the build. The codechecker.cfg file is used to configure the codechecker, which is a static analysis tool.
 
 ## Requirements
 
-The extension requires that you have Python 3 installed, and that you have the Python packages Meson, gcovr, PyCParser. The extension also requires Ninja to be installed, and that you have a C compiler installed, one for the host, and another for target.
+The extension requires that you have Python 3 installed, and that you have the Python packages Meson, gcovr, PyCParser. The extension also requires Ninja to be installed, and that you have a C compiler installed, one for the host, and another for target. Also, you'll need to have codechecker installed, along with any dependencies it might have.
 
 ## Extension Settings
 
@@ -78,3 +80,9 @@ Try at fix of the extension not working outside debug
 ### 0.0.3
 
 Fix of the extension not working outside debug
+
+### 0.0.4
+
+Fix coverage report not working, add support for codechecker
+Configure project button now detects if the build system is already configured, and if it is, then it will call meson with '--wipe' flag
+Added new buttons in the unit editor view

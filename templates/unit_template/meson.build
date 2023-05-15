@@ -95,6 +95,9 @@ test(
                                 ],
                                 c_args: [ platform_cflags, '-DPLATFORM=1', '-DUNIT_TEST=1'],
                                 link_args: [ link_args ],
+                                override_options: [
+                                        'b_coverage=false'
+                                ],
                         ).full_path()
                 ], 
         protocol: 'tap',

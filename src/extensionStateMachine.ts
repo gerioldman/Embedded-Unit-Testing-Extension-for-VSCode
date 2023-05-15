@@ -46,7 +46,24 @@ export namespace ModelStateMachine {
                 );
             }
             this.terminal.show();
-            this.terminal.sendText("meson setup builddir --cross-file=integration/cross_compile.build");
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path);
+            try {
+                let result = await vscode.workspace.fs.stat(vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, "builddir"));
+
+                if (result.type === vscode.FileType.Directory) {
+                    this.terminal.sendText("meson setup builddir --cross-file=integration/cross_compile.build --wipe");
+                }
+            }
+            catch (e: any) {
+                if (e.code !== "EntryNotFound") {
+                    this.terminal.sendText("meson setup builddir --cross-file=integration/cross_compile.build");
+                }
+                else {
+                    vscode.window.showErrorMessage("Error during configuring build system: " + e);
+                }
+            }
+
         }
 
         public async compileProject(_context: vscode.ExtensionContext) {
@@ -56,7 +73,9 @@ export namespace ModelStateMachine {
                 );
             }
             this.terminal.show();
-            this.terminal.sendText("cd builddir;meson compile;cd ..");
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path);
+            this.terminal.sendText("ninja -C builddir");
         }
 
         public async flashProject(_context: vscode.ExtensionContext) {
@@ -66,7 +85,45 @@ export namespace ModelStateMachine {
                 );
             }
             this.terminal.show();
-            this.terminal.sendText("cd builddir;meson compile flash;cd ..");
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path);
+            this.terminal.sendText("ninja -C builddir flash");
+        }
+
+        public async runTests(_context: vscode.ExtensionContext) {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode unit Editor",
+                );
+            }
+            this.terminal.show();
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path);
+            this.terminal.sendText("ninja -C builddir test");
+        }
+
+        public async runCoverage(_context: vscode.ExtensionContext) {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode unit Editor",
+                );
+            }
+            this.terminal.show();
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path);
+            this.terminal.sendText("ninja -C builddir coverage");
+        }
+
+        public async runStaticAnalysis(_context: vscode.ExtensionContext) {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode unit Editor",
+                );
+            }
+            this.terminal.show();
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path);
+            this.terminal.sendText("ninja -C builddir static_analysis");
         }
 
         constructor() {

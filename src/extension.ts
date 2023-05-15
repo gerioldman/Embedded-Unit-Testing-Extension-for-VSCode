@@ -24,6 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
     let disposable8 = vscode.commands.registerCommand('unit_editor.configureProject', 	( ) => modelStateMachine.configureProject(context));
     let disposable9 = vscode.commands.registerCommand('unit_editor.compileProject', 	( ) => modelStateMachine.compileProject(context));
 	let disposable10 = vscode.commands.registerCommand('unit_editor.flashProject', 	( ) => modelStateMachine.flashProject(context));
+	let disposable11 = vscode.commands.registerCommand('unit_editor.runTests', 	( ) => modelStateMachine.runTests(context));
+	let disposable12 = vscode.commands.registerCommand('unit_editor.runCoverage', 	( ) => modelStateMachine.runCoverage(context));
+	let disposable13 = vscode.commands.registerCommand('unit_editor.runStaticAnalysis', 	( ) => modelStateMachine.runStaticAnalysis(context));
 
 	modelStateMachine.process();
 
@@ -38,7 +41,10 @@ export function activate(context: vscode.ExtensionContext) {
 		disposable7,
 		disposable8,
 		disposable9,
-		disposable10
+		disposable10,
+		disposable11,
+		disposable12,
+		disposable13
 	);
 	
 }

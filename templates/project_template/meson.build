@@ -7,7 +7,8 @@ project(
     meson_version: '>= 1.0.0',
     default_options:[
         'c_std=gnu11',
-        'buildtype=debugoptimized'
+        'buildtype=debugoptimized',
+        'b_coverage=true'
     ]
 )
 
@@ -70,7 +71,7 @@ codechecker = find_program('CodeChecker')
 
 run_target(
     'static_analysis',
-    command: [codechecker, 'analyze', 'compile_commands.json' , '-o', '..\\reports']
+    command: [codechecker, 'analyze', 'compile_commands.json' , '-o', '..\\.codechecker','--skip','..\\codechecker.cfg']
 )
 
 if get_option('target_executable') == true
@@ -95,7 +96,10 @@ ELF = executable(meson.project_name(),
         '-DPLATFORM=1', 
         '-DUNITTEST=0'
     ],
-    link_args: [ link_args ]
+    link_args: [ link_args ],
+    override_options: [
+        'b_coverage=false'
+    ]
 )
 
 objcopy = find_program('objcopy')
@@ -122,7 +126,6 @@ custom_target(
 # For example, for the STM32F4 Discovery board, you can use the following command:
 # command: ['st-flash', 'write', meson.project_name() + '.bin', '0x8000000']
 # I recommend using the python script, as it is more portable
-# I recommend putting custom commands in the integration meson.build file
 run_target(
     'flash',
     command: [python, flash_script ,meson.project_name() + '.elf'],
