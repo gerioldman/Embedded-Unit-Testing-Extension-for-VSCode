@@ -151,7 +151,7 @@ void TAP_YAMLDiagnostic(const char *file, unsigned int line, const char *message
     TAP_indent();
     printf("  line: %u\n", line);
 
-    if (message == ((void *)0))
+    if (message != ((void *)0))
     {
 
         // Print the message and indent every line
