@@ -230,8 +230,8 @@ export namespace unitViewTree {
                         if (value.length === 0) {
                             return 'The name of the TestSuite cannot be empty';
                         }
-                        if (value === 'TestSuite') {
-                            return 'The name of the TestSuite cannot be TestSuite';
+                        if (value === 'TestSuite' || value === 'TestCase') {
+                            return 'The name of the TestSuite cannot be TestSuite or TestCase';
                         }
                         // Check if the name already exists
                         for (let testSuite of element.children) {
@@ -290,8 +290,8 @@ export namespace unitViewTree {
                         if (value.length === 0) {
                             return 'The name of the TestCase cannot be empty';
                         }
-                        if (value === 'TestCase') {
-                            return 'The name of the TestCase cannot be TestCase';
+                        if (value === 'TestSuite' || value === 'TestCase') {
+                            return 'The name of the TestSuite cannot be TestSuite or TestCase';
                         }
                         // Check if the name already exists
                         for (const testSuite of element.parent?.children ?? []) {
