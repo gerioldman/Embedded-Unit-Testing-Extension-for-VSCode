@@ -86,3 +86,8 @@ Fix of the extension not working outside debug
 Fix coverage report not working, add support for codechecker
 Configure project button now detects if the build system is already configured, and if it is, then it will call meson with '--wipe' flag
 Added new buttons in the unit editor view
+
+### 0.1.0
+
+Added all the features that were planned for the initial release (unit editor, unit test runner, code coverage, codechecker integration, and project configuration)
+Added a new button in the unit editor view for parsing codechecker results
