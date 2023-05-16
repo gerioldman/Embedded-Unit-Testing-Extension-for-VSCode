@@ -57,6 +57,11 @@
           "command": "unit_editor.runStaticAnalysis",
           "when": "view == unit_editor",
           "group": "navigation"
+        },
+        {
+          "command": "unit_editor.parseStaticAnalysis",
+          "when": "view == unit_editor",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -156,6 +161,11 @@
       {
         "command": "unit_editor.createProject",
         "title": "Create Project"
+      },
+      {
+        "command": "unit_editor.parseStaticAnalysis",
+        "title": "Parse Static Analysis",
+        "icon": "$(book)"
       }
     ],
     "viewsContainers": {

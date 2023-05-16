@@ -72,10 +72,17 @@ codechecker = find_program('CodeChecker')
 run_target(
     'static_analysis',
     command: [
-        codechecker, 'analyze', 'compile_commands.json' , '-o', '..\\.codechecker','--skip','..\\codechecker.cfg',';',
-        codechecker, 'parse', 'folder', '.\.codechecker\', '--export', 'html', '-o', '.\.codechecker_results'
+        codechecker, 'analyze', 'compile_commands.json' , '-o', '.\\..\\.codechecker','--skip','.\\..\\codechecker.cfg'
     ]
 )
+
+# For some reason, this causes a crash in meson, so I commented it out for now TODO: find out why
+#run_target(
+#    'static_analysis_parse',
+#    command: [
+#        codechecker, 'parse', 'folder', '.\\..\\.codechecker', '--export', 'html', '-o', '.\\..\\.codechecker_results'
+#    ]
+#)
 
 if get_option('target_executable') == true
 

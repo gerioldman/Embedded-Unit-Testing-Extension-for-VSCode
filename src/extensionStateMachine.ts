@@ -127,6 +127,18 @@ export namespace ModelStateMachine {
             this.terminal.sendText("ninja -C builddir static_analysis");
         }
 
+        public async parseStaticAnalysis(_context: vscode.ExtensionContext) {
+            if (this.terminal === undefined) {
+                this.terminal = vscode.window.createTerminal(
+                    "VSCode unit Editor",
+                );
+            }
+            this.terminal.show();
+            let path: string = vscode.workspace.workspaceFolders![0].uri.fsPath;
+            this.terminal.sendText("cd " + path + "/builddir");
+            this.terminal.sendText("codechecker parse folder .\\..\\.codechecker -e html -o .\\..\\.codechecker_results");
+        }
+
         constructor() {
             this.transitions.push(
                 {

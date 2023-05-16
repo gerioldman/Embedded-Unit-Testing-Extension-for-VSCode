@@ -356,6 +356,11 @@ export namespace ProjectGenerator {
                         (element) => {
                             return element[0] === "meson.build" && element[1] === vscode.FileType.File;
                         }) !== undefined
+                    &&
+                    results.find(
+                        (element) => {
+                            return element[0] === "codechecker.cfg" && element[1] === vscode.FileType.File;
+                        }) !== undefined
                 )
             ) {
                 throw new Error("Template files missing from extension!");
@@ -386,6 +391,19 @@ export namespace ProjectGenerator {
                 }
                 else {
                     this.logError("Error copying meson_options.txt: " + error);
+                }
+            }
+
+            sourceFile = vscode.Uri.joinPath(projectTemplateFolderUri, "codechecker.cfg");
+            targetFile = vscode.Uri.joinPath(workspaceFolderUri, "codechecker.cfg");
+            try {
+                await vscode.workspace.fs.copy(sourceFile, targetFile, { overwrite: false });
+            } catch (error: any) {
+                if (error.code === "FileExists") {
+                    this.logWarning("codechecker.cfg already exists in workspace folder, not overwriting it!");
+                }
+                else {
+                    this.logError("Error copying codechecker.cfg: " + error);
                 }
             }
 
@@ -655,8 +673,7 @@ export namespace ProjectGenerator {
                 }
                 this.logInfo("Folders created");
             }
-            else
-            {
+            else {
                 this.logError("Error getting extension folder");
                 throw new Error("Error getting extension folder");
             }
