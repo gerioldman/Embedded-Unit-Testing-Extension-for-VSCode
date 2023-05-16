@@ -71,7 +71,10 @@ codechecker = find_program('CodeChecker')
 
 run_target(
     'static_analysis',
-    command: [codechecker, 'analyze', 'compile_commands.json' , '-o', '..\\.codechecker','--skip','..\\codechecker.cfg']
+    command: [
+        codechecker, 'analyze', 'compile_commands.json' , '-o', '..\\.codechecker','--skip','..\\codechecker.cfg',';',
+        codechecker, 'parse', 'folder', '.\.codechecker\', '--export', 'html', '-o', '.\.codechecker_results'
+    ]
 )
 
 if get_option('target_executable') == true
