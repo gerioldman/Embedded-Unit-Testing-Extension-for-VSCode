@@ -62,8 +62,11 @@ test(
                         unittest_include,
                         include_directories('UnitTest/include')
                 ],
-                c_args: ['-DPLATFORM=0', '-DUNIT_TEST=1', '-g'],
-                native: true
+                c_args: ['-DPLATFORM=0', '-DUNIT_TEST=1'],
+                native: true,
+                override_options: [
+                        'buildtype=debug'
+                ],
         ),
         protocol: 'tap',
 )
@@ -96,7 +99,8 @@ test(
                                 c_args: [ platform_cflags, '-DPLATFORM=1', '-DUNIT_TEST=1'],
                                 link_args: [ link_args ],
                                 override_options: [
-                                        'b_coverage=false'
+                                        'b_coverage=false',
+                                        'buildtype=debug'
                                 ],
                         ).full_path()
                 ], 
