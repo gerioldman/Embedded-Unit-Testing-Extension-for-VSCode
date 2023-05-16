@@ -102,7 +102,7 @@ export namespace unitViewTree {
      * @class unitView
      * @implements {vscode.TreeDataProvider<ViewTreeItem>}
      */
-    export class unitView implements vscode.TreeDataProvider<ViewTreeItem>
+    export class UnitView implements vscode.TreeDataProvider<ViewTreeItem>
     {
         /**
          * The tree data
@@ -171,16 +171,16 @@ export namespace unitViewTree {
         createunit(context: vscode.ExtensionContext) {
             vscode.window.showInputBox(
                 {
-                    prompt: 'Enter the name of the unit',
-                    placeHolder: 'unit name',
+                    prompt: 'Enter the name of the Unit',
+                    placeHolder: 'Unit name',
                     validateInput: (value: string) => {
                         // Check if the name is empty
                         if (value.length === 0) {
-                            return 'The name of the unit cannot be empty';
+                            return 'The name of the Unit cannot be empty';
                         }
                         // Check if the name already exists
                         if (this.treeData.find(item => item.label === value)) {
-                            return 'The name of the unit already exists';
+                            return 'The name of the Unit already exists';
                         }
                         // Check if the name contains only letters, numbers and underscores
                         if (!value.match(/^[a-zA-Z0-9_]+$/)) {
@@ -229,6 +229,9 @@ export namespace unitViewTree {
                         // Check if the name is empty
                         if (value.length === 0) {
                             return 'The name of the TestSuite cannot be empty';
+                        }
+                        if (value === 'TestSuite') {
+                            return 'The name of the TestSuite cannot be TestSuite';
                         }
                         // Check if the name already exists
                         for (let testSuite of element.children) {
@@ -286,6 +289,9 @@ export namespace unitViewTree {
                         // Check if the name is empty
                         if (value.length === 0) {
                             return 'The name of the TestCase cannot be empty';
+                        }
+                        if (value === 'TestCase') {
+                            return 'The name of the TestCase cannot be TestCase';
                         }
                         // Check if the name already exists
                         for (const testSuite of element.parent?.children ?? []) {

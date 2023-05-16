@@ -7,7 +7,8 @@ export namespace ModelStateMachine {
     enum State {
         // Declare all states here as needed
         initial,
-        initOver,
+        modelLoaded,
+        modelNotExist,
 
     }
 
@@ -23,7 +24,7 @@ export namespace ModelStateMachine {
         state: State = State.initial;
         transitions: Transition[] = [];
         modelHandler: ModelHandler.Model = new ModelHandler.Model();
-        unitViewTreeView: unitViewTree.unitView = new unitViewTree.unitView(this.modelHandler);
+        unitViewTreeView: unitViewTree.UnitView = new unitViewTree.UnitView(this.modelHandler);
         projectGenerator: ProjectGenerator.ProjectGenerator = new ProjectGenerator.ProjectGenerator(this.modelHandler);
         terminal: vscode.Terminal | undefined;
 
@@ -129,11 +130,11 @@ export namespace ModelStateMachine {
         constructor() {
             this.transitions.push(
                 {
-                    // Try to load the model
+                    // Check for the modell, if it exists, load it
                     from: [State.initial],
                     when: async (state) => {
                         state; // unused
-                        return true;
+                        return vscode.workspace.workspaceFolders !== undefined;
                     },
                     actions: [
                         async (state) => {
@@ -160,6 +161,8 @@ export namespace ModelStateMachine {
                             if (modelExists) {
                                 try {
                                     await this.modelHandler.loadModel(modelPath); // Load file if it exists
+                                    this.state = State.modelLoaded;
+                                    this.unitViewTreeView.buildTreeData(this.modelHandler);
                                 }
                                 catch (e) {
                                     vscode.window.showErrorMessage("Error loading found model: " + e);
@@ -168,20 +171,41 @@ export namespace ModelStateMachine {
                             }
                             else {
                                 try {
-                                    await this.modelHandler.saveModel(modelPath); // Create file if it does not exist yet
+                                    //await this.modelHandler.saveModel(modelPath); // Create file if it does not exist yet
+                                    this.state = State.modelNotExist; // No model found, wait for user to init project
                                 }
                                 catch (e) {
                                     vscode.window.showErrorMessage("Model not found,trying to save intial model failed: " + e);
                                     return;
                                 }
-
                             }
-
-                            this.unitViewTreeView.buildTreeData(this.modelHandler);
-
-                            this.state = State.initOver;
                         }
                     ],
+                },
+                {
+                    // Check if workspace is opened, and if it is, create a new model
+                    from: [State.modelNotExist],
+                    when: async (state) => {
+                        state; // unused
+                        if (vscode.workspace.workspaceFolders === undefined) {
+                            vscode.window.showErrorMessage("No workspace opened");
+                        }
+                        return vscode.workspace.workspaceFolders !== undefined;
+                    },
+                    actions: [
+                        async (state) => {
+                            state; // unused
+                            try {
+                                await this.modelHandler.saveModel(vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, ".vscode", "model.json")); // Create file if it does not exist yet
+                                this.state = State.modelLoaded;
+                                this.unitViewTreeView.buildTreeData(this.modelHandler);
+                            }
+                            catch (e) {
+                                vscode.window.showErrorMessage("Error saving initial model: " + e);
+                                return;
+                            }
+                        }
+                    ]
                 }
             );
         }
