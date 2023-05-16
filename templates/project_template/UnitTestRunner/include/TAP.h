@@ -1,5 +1,5 @@
 #ifndef TAP_H
-#define TAP_HTAP_H
+#define TAP_H
 
 // TAP.h - TAP (Test Anything Protocol) output for UnitTestRunner
 
