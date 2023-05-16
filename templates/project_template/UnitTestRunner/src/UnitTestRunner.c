@@ -11,11 +11,7 @@
 
 #include "UnitTestFramework.h"
 
-#if PLATFORM == 0
-int main(int argc, char *argv[])
-#else
 int main()
-#endif
 {
 
     RunAllTests();
